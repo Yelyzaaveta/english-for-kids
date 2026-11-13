@@ -6,54 +6,90 @@
 <title>English for Kids</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg: #0e1726;
+    --bg2: #13233a;
+    --card: #182a44;
+    --card-edge: #22385a;
+    --text: #e8eef7;
+    --muted: #8aa0bd;
+    --green: #3ddc84;
+    --blue: #3fa9f5;
+    --yellow: #ffc93c;
+    --purple: #9b6dff;
+  }
   * { box-sizing: border-box; }
   body {
     margin: 0;
     min-height: 100vh;
-    font-family: "Fredoka", system-ui, sans-serif;
-    color: #2b2d42;
-    background: linear-gradient(160deg, #fff6e5, #e6f4ff);
-    padding: 32px 16px;
+    font-family: "Rubik", system-ui, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #1d3a5f 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 110%, #2a1f55 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg2), var(--bg));
+    background-attachment: fixed;
+    padding: 40px 16px;
   }
-  .wrap { max-width: 860px; margin: 0 auto; }
-  h1 { text-align: center; font-size: clamp(32px, 7vw, 56px); margin: 0 0 8px; }
-  h1 span { display: inline-block; }
-  .sub { text-align: center; font-size: 20px; margin: 0 0 32px; opacity: .7; }
-  h2 { font-size: 26px; margin: 24px 0 12px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 {
+    text-align: center;
+    font-size: clamp(30px, 6vw, 52px);
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+  }
+  h1 .accent {
+    background: linear-gradient(90deg, var(--green), var(--blue), var(--purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .sub { text-align: center; font-size: 18px; margin: 0 0 36px; color: var(--muted); }
+  h2 {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--yellow);
+    margin: 28px 0 14px;
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
   .task {
-    display: flex; align-items: center; gap: 14px;
+    display: flex; align-items: center; gap: 16px;
     padding: 18px 20px;
-    background: #fff;
-    border-radius: 20px;
+    background: linear-gradient(180deg, #1c3150, var(--card));
+    border: 1px solid var(--card-edge);
+    border-left: 4px solid var(--c, var(--green));
+    border-radius: 12px;
     text-decoration: none;
     color: inherit;
-    font-size: 22px; font-weight: 700;
-    box-shadow: 0 5px 0 #0000001a, 0 8px 20px #0000000f;
-    transition: transform .15s;
+    font-size: 20px; font-weight: 700;
+    transition: transform .15s, border-color .15s;
   }
-  .task:hover { transform: translateY(-3px) rotate(-1deg); }
-  .task .ico { font-size: 34px; }
+  .task:hover { transform: translateY(-3px); border-color: var(--c, var(--green)); }
+  .task .ico {
+    width: 46px; height: 46px; flex: none;
+    display: grid; place-items: center;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--c, var(--green)) 18%, transparent);
+    color: var(--c, var(--green));
+    font-weight: 800; font-size: 18px;
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1 id="title">English for Kids</h1>
-  <p class="sub">Обери задачку 👇</p>
+  <h1>English <span class="accent">for Kids</span></h1>
+  <p class="sub">Обери задачку</p>
 
-  <h2>⭐ Beginners</h2>
+  <h2>Beginners</h2>
   <div class="grid">
-    <a class="task" href="beginners/alphabet.html"><span class="ico">🔤</span> Alphabet</a>
+    <a class="task" href="beginners/alphabet.html" style="--c: var(--green)"><span class="ico">ABC</span> Alphabet</a>
   </div>
 </div>
-<script>
-  const COLORS = ["#ef476f", "#f77f00", "#e9b400", "#06a77d", "#118ab2", "#7b2cbf"];
-  const t = document.getElementById("title");
-  let i = 0;
-  t.innerHTML = t.textContent.split("").map(ch =>
-    ch === " " ? " " : `<span style="color:${COLORS[i++ % COLORS.length]}">${ch}</span>`).join("");
-</script>
 </body>
 </html>
