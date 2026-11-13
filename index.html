@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English for Kids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Fredoka", system-ui, sans-serif;
+    color: #2b2d42;
+    background: linear-gradient(160deg, #fff6e5, #e6f4ff);
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { text-align: center; font-size: clamp(32px, 7vw, 56px); margin: 0 0 8px; }
+  h1 span { display: inline-block; }
+  .sub { text-align: center; font-size: 20px; margin: 0 0 32px; opacity: .7; }
+  h2 { font-size: 26px; margin: 24px 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .task {
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 20px;
+    background: #fff;
+    border-radius: 20px;
+    text-decoration: none;
+    color: inherit;
+    font-size: 22px; font-weight: 700;
+    box-shadow: 0 5px 0 #0000001a, 0 8px 20px #0000000f;
+    transition: transform .15s;
+  }
+  .task:hover { transform: translateY(-3px) rotate(-1deg); }
+  .task .ico { font-size: 34px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="title">English for Kids</h1>
+  <p class="sub">Обери задачку 👇</p>
+
+  <h2>⭐ Beginners</h2>
+  <div class="grid">
+    <a class="task" href="beginners/alphabet.html"><span class="ico">🔤</span> Alphabet</a>
+  </div>
+</div>
+<script>
+  const COLORS = ["#ef476f", "#f77f00", "#e9b400", "#06a77d", "#118ab2", "#7b2cbf"];
+  const t = document.getElementById("title");
+  let i = 0;
+  t.innerHTML = t.textContent.split("").map(ch =>
+    ch === " " ? " " : `<span style="color:${COLORS[i++ % COLORS.length]}">${ch}</span>`).join("");
+</script>
+</body>
+</html>

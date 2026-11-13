@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alphabet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg1: #fff6e5;
+    --bg2: #e6f4ff;
+    --ink: #2b2d42;
+    --card: #ffffff;
+    --gap: 10px;
+    --cw: 80px;
+    --ch: 96px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: "Fredoka", "Comic Sans MS", system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 10% 15%, #ffd6e8 0 60px, transparent 61px),
+      radial-gradient(circle at 92% 20%, #d4f5d4 0 80px, transparent 81px),
+      radial-gradient(circle at 85% 90%, #ffe9a8 0 70px, transparent 71px),
+      radial-gradient(circle at 5% 88%, #d6e4ff 0 90px, transparent 91px),
+      linear-gradient(160deg, var(--bg1), var(--bg2));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 12px 16px 4px;
+  }
+  .home {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-decoration: none;
+    font-size: 22px;
+    width: 44px; height: 44px;
+    display: grid; place-items: center;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 3px 0 #0001, 0 4px 12px #0001;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(26px, 5vh, 44px);
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+  h1 span { display: inline-block; text-shadow: 0 3px 0 #0002; }
+  h1 span:nth-child(odd) { transform: rotate(-6deg); }
+  h1 span:nth-child(even) { transform: rotate(5deg) translateY(2px); }
+
+  main {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+    padding: 8px 16px;
+  }
+  #board {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--gap);
+  }
+
+  .card {
+    width: var(--cw);
+    height: var(--ch);
+    perspective: 800px;
+    cursor: pointer;
+    border: 0;
+    padding: 0;
+    background: none;
+    font: inherit;
+  }
+  .card:focus-visible { outline: 3px solid #4361ee; outline-offset: 3px; border-radius: 18px; }
+  .inner {
+    position: relative;
+    width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transition: transform .55s cubic-bezier(.3, 1.4, .5, 1);
+  }
+  .card.hidden .inner { transform: rotateY(180deg); }
+  .card:active .inner { scale: .96; }
+
+  .face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: calc(var(--cw) * .2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .front {
+    background: var(--card);
+    box-shadow: 0 4px 0 #0000001a, 0 6px 16px #0000001a;
+    border: 3px solid color-mix(in srgb, var(--c) 30%, white);
+    color: var(--c);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .front .up { font-size: calc(var(--ch) * .58); text-shadow: 0 3px 0 color-mix(in srgb, var(--c) 25%, transparent); }
+  .front .low { font-size: calc(var(--ch) * .34); margin-left: .06em; align-self: flex-end; margin-bottom: calc(var(--ch) * .2); opacity: .85; }
+
+  .back {
+    transform: rotateY(180deg);
+    background:
+      radial-gradient(circle at 25% 25%, #ffffff40 0 8%, transparent 9%),
+      radial-gradient(circle at 75% 70%, #ffffff30 0 10%, transparent 11%),
+      linear-gradient(145deg, #7b5cff, #ff6fb1);
+    box-shadow: 0 4px 0 #5a3fd080, 0 6px 16px #0000002a;
+    color: #fff;
+    font-size: calc(var(--ch) * .5);
+    font-weight: 700;
+    text-shadow: 0 3px 0 #0003;
+  }
+  .card:hover .back { filter: brightness(1.08); }
+
+  .card.pop .inner { animation: pop .5s ease; }
+  @keyframes pop { 50% { scale: 1.12; } }
+
+  footer {
+    flex: none;
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    padding: 6px 16px max(14px, env(safe-area-inset-bottom));
+  }
+  .btn {
+    font: inherit;
+    font-weight: 700;
+    font-size: clamp(18px, 3vh, 24px);
+    border: 0;
+    border-radius: 18px;
+    padding: 12px 28px;
+    color: #fff;
+    cursor: pointer;
+    transition: transform .1s, box-shadow .1s;
+  }
+  .btn:active { transform: translateY(4px); }
+  .reset { background: #ff8c42; box-shadow: 0 5px 0 #d96a1f; }
+  .reset:active { box-shadow: 0 1px 0 #d96a1f; }
+  .open { background: #2ec4b6; box-shadow: 0 5px 0 #1f9a8e; }
+  .open:active { box-shadow: 0 1px 0 #1f9a8e; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .inner { transition-duration: .01s; }
+    .card.pop .inner { animation: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <a class="home" href="../" aria-label="Home">🏠</a>
+  <h1 id="title" aria-label="Alphabet"></h1>
+</header>
+
+<main><div id="board"></div></main>
+
+<footer>
+  <button class="btn reset" id="reset">🔀 Reset</button>
+  <button class="btn open" id="openAll">👀 Open all</button>
+</footer>
+
+<script>
+  const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const COLORS = ["#ef476f", "#f77f00", "#e9b400", "#06a77d", "#118ab2", "#7b2cbf", "#ff5d8f", "#2a9d8f"];
+  const board = document.getElementById("board");
+  let cols = 7;
+
+  // Colorful title
+  document.getElementById("title").innerHTML = "Alphabet".split("")
+    .map((ch, i) => `<span style="color:${COLORS[i % COLORS.length]}">${ch}</span>`).join("");
+
+  // Build cards
+  const cards = LETTERS.map((L, i) => {
+    const b = document.createElement("button");
+    b.className = "card";
+    b.style.setProperty("--c", COLORS[i % COLORS.length]);
+    b.setAttribute("aria-label", L);
+    b.innerHTML = `<div class="inner">
+        <div class="face front"><span class="up">${L}</span><span class="low">${L.toLowerCase()}</span></div>
+        <div class="face back">?</div>
+      </div>`;
+    b.addEventListener("click", () => {
+      b.classList.toggle("hidden");
+      if (!b.classList.contains("hidden")) {
+        b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop");
+      }
+    });
+    board.appendChild(b);
+    return b;
+  });
+
+  // Fit all cards on one screen: try column counts, keep the biggest card size
+  function layout() {
+    const main = document.querySelector("main");
+    const W = main.clientWidth - 32;
+    const H = main.clientHeight - 16;
+    const gap = Math.max(6, Math.min(14, Math.min(W, H) * 0.018));
+    const ratio = 0.84; // width / height
+    let best = { cw: 0, c: 7 };
+    for (let c = 3; c <= 13; c++) {
+      const r = Math.ceil(LETTERS.length / c);
+      const wByW = (W - gap * (c - 1)) / c;
+      const wByH = ((H - gap * (r - 1)) / r) * ratio;
+      const cw = Math.min(wByW, wByH);
+      if (cw > best.cw) best = { cw, c };
+    }
+    cols = best.c;
+    const cw = Math.floor(best.cw);
+    const root = document.documentElement.style;
+    root.setProperty("--gap", gap + "px");
+    root.setProperty("--cw", cw + "px");
+    root.setProperty("--ch", Math.floor(cw / ratio) + "px");
+    board.style.width = (cw * cols + gap * (cols - 1) + 1) + "px";
+  }
+
+  // Hide 1–3 random letters in every row of the current layout
+  function reset() {
+    cards.forEach(c => c.classList.remove("hidden"));
+    for (let start = 0; start < cards.length; start += cols) {
+      const row = cards.slice(start, start + cols);
+      const max = Math.max(1, Math.min(3, Math.floor(row.length / 2)));
+      const k = 1 + Math.floor(Math.random() * max);
+      row.map(c => [Math.random(), c]).sort((a, b) => a[0] - b[0])
+         .slice(0, k).forEach(([, c]) => c.classList.add("hidden"));
+    }
+  }
+
+  function openAll() {
+    cards.forEach((c, i) => {
+      if (c.classList.contains("hidden")) setTimeout(() => c.classList.remove("hidden"), i * 25);
+    });
+  }
+
+  document.getElementById("reset").addEventListener("click", reset);
+  document.getElementById("openAll").addEventListener("click", openAll);
+  window.addEventListener("resize", layout);
+
+  layout();
+  reset();
+</script>
+</body>
+</html>
