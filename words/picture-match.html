@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Picture Match</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<style>
+  .hint { color: var(--muted); font-size: 16px; margin: 4px 0 12px; text-align: center; }
+  .board {
+    width: min(620px, 100%);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(10px, 3vw, 28px);
+    margin-top: 12px;
+  }
+  .col { display: flex; flex-direction: column; gap: clamp(6px, 1.2vh, 12px); }
+  .tile {
+    height: clamp(44px, 9vh, 78px);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 14px;
+    background: linear-gradient(180deg, var(--card-top), var(--card));
+    border: 2px solid var(--card-edge);
+    color: var(--text);
+    font: inherit;
+    font-weight: 700;
+    font-size: clamp(16px, 3vh, 24px);
+    cursor: pointer;
+    transition: border-color .15s, background .2s, opacity .3s, transform .1s;
+  }
+  .tile:hover { border-color: #345584; }
+  .tile:active { transform: scale(.97); }
+  .tile.emoji { font-size: clamp(26px, 5.5vh, 46px); }
+  .tile.selected { border-color: var(--blue); box-shadow: 0 0 0 3px #3fa9f540; }
+  .tile.wrong { border-color: var(--red); }
+  .tile.done {
+    border-color: var(--green);
+    background: #3ddc8422;
+    color: var(--green);
+    cursor: default;
+  }
+  .tile:disabled { cursor: default; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Picture <span class="accent">Match</span></h1>
+  <div class="score" id="score">0/6</div>
+</header>
+
+<main>
+  <div class="pills" id="topics"></div>
+  <div class="board">
+    <div class="col" id="left"></div>
+    <div class="col" id="right"></div>
+  </div>
+  <p class="hint">Tap a picture, then tap its word.</p>
+</main>
+
+<footer>
+  <button class="btn yellow" id="new" data-icon="reset">New words</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script>
+  const PAIRS = 6;
+  const left = document.getElementById("left");
+  const right = document.getElementById("right");
+  const scoreEl = document.getElementById("score");
+  let topic = "animals";
+  let selected = null;
+  let matched = 0;
+  let mistakes = 0;
+
+  // Topic pills
+  const topicsEl = document.getElementById("topics");
+  Object.entries(TOPICS).forEach(([key, t]) => {
+    const b = document.createElement("button");
+    b.className = "pill" + (key === topic ? " active" : "");
+    b.textContent = t.title;
+    b.addEventListener("click", () => {
+      topic = key;
+      topicsEl.querySelectorAll(".pill").forEach(p => p.classList.toggle("active", p === b));
+      newRound();
+    });
+    topicsEl.appendChild(b);
+  });
+
+  function makeTile(text, word, side) {
+    const b = document.createElement("button");
+    b.className = "tile" + (side === "pic" ? " emoji" : "");
+    b.textContent = text;
+    b.dataset.word = word;
+    b.dataset.side = side;
+    b.addEventListener("click", () => choose(b));
+    return b;
+  }
+
+  function newRound() {
+    const words = sample(TOPICS[topic].words, PAIRS);
+    left.innerHTML = "";
+    right.innerHTML = "";
+    shuffle(words).forEach(([w, e]) => left.appendChild(makeTile(e, w, "pic")));
+    shuffle(words).forEach(([w]) => right.appendChild(makeTile(w, w, "word")));
+    selected = null;
+    matched = 0;
+    mistakes = 0;
+    scoreEl.textContent = `0/${PAIRS}`;
+  }
+
+  function choose(tile) {
+    if (tile.classList.contains("done")) return;
+    if (tile.dataset.side === "word") speak(tile.dataset.word);
+
+    if (!selected || selected.dataset.side === tile.dataset.side) {
+      if (selected) selected.classList.remove("selected");
+      selected = tile === selected ? null : tile;
+      if (selected) selected.classList.add("selected");
+      return;
+    }
+
+    const a = selected, b = tile;
+    a.classList.remove("selected");
+    selected = null;
+
+    if (a.dataset.word === b.dataset.word) {
+      [a, b].forEach(t => { t.classList.add("done"); t.disabled = true; flash(t, "pop"); });
+      speak(a.dataset.word);
+      matched++;
+      scoreEl.textContent = `${matched}/${PAIRS}`;
+      if (matched === PAIRS) {
+        setTimeout(() => showResult({ score: Math.max(0, PAIRS - mistakes), total: PAIRS, onAgain: newRound }), 700);
+      }
+    } else {
+      mistakes++;
+      [a, b].forEach(t => { t.classList.add("wrong"); flash(t, "shake"); });
+      setTimeout(() => [a, b].forEach(t => t.classList.remove("wrong")), 500);
+    }
+  }
+
+  document.getElementById("new").addEventListener("click", newRound);
+  newRound();
+</script>
+</body>
+</html>
