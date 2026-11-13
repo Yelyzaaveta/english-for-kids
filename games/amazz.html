@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Amazz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<style>
+  .task { color: var(--muted); font-size: clamp(18px, 3vh, 24px); font-weight: 700; margin: 14px 0 0; text-align: center; }
+  .stage {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    margin: clamp(10px, 3vh, 28px) 0;
+  }
+  .stage .e { font-size: clamp(90px, 24vh, 200px); line-height: 1; }
+  .stage .w { font-size: clamp(24px, 4.5vh, 40px); font-weight: 800; }
+  .sizes { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(10px, 2vw, 20px); }
+  .size {
+    min-width: min(28vw, 150px); padding: 14px 18px;
+    border-radius: 16px; border: 2px solid var(--card-edge);
+    background: linear-gradient(180deg, var(--card-top), var(--card));
+    color: var(--text); font: inherit; font-size: clamp(18px, 3vh, 26px); font-weight: 800;
+    cursor: pointer; box-shadow: 0 8px 20px #00000040;
+    transition: border-color .15s, background .2s, opacity .3s, transform .1s;
+  }
+  .size:hover:not(:disabled) { border-color: var(--blue); }
+  .size:active:not(:disabled) { transform: scale(.97); }
+  .size:disabled { cursor: default; }
+  .size.right { border-color: var(--green); background: #3ddc8422; }
+  .size.wrong { border-color: var(--red); background: #ff4d6d22; }
+  .explain {
+    min-height: 2.6em; text-align: center; max-width: 620px;
+    font-size: clamp(16px, 2.8vh, 22px); font-weight: 700; margin-top: 14px;
+  }
+  .explain b { color: var(--green); }
+  #next { display: none; }
+  #next.show { display: inline-flex; }
+  @media (max-width: 480px) {
+    .sizes { flex-direction: column; align-items: stretch; width: min(80vw, 320px); }
+    .size { min-width: 0; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Am<span class="accent">azz</span></h1>
+  <div class="score" id="score">0</div>
+</header>
+
+<main>
+  <div class="progress"><div id="bar"></div></div>
+  <p class="task">How big is it?</p>
+  <div class="stage"><span class="e" id="emoji"></span><span class="w" id="word"></span></div>
+  <div class="sizes" id="sizes">
+    <button class="size" data-size="small">Small</button>
+    <button class="size" data-size="big">Big</button>
+    <button class="size" data-size="huge">Huge</button>
+  </div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+  <button class="btn green" id="next" data-icon="next">Next</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script>
+  const ROUNDS = 10;
+  const TRANSPORT = [
+    ["bicycle","🚲","small"], ["scooter","🛴","small"], ["skateboard","🛹","small"], ["motorbike","🏍️","small"],
+    ["car","🚗","big"], ["taxi","🚕","big"], ["bus","🚌","big"], ["tractor","🚜","big"],
+    ["fire engine","🚒","big"], ["van","🚐","big"],
+    ["ship","🚢","huge"], ["airplane","✈️","huge"], ["train","🚆","huge"], ["rocket","🚀","huge"],
+    ["helicopter","🚁","huge"],
+  ];
+  const emojiEl = document.getElementById("emoji");
+  const wordEl = document.getElementById("word");
+  const explain = document.getElementById("explain");
+  const nextBtn = document.getElementById("next");
+  const bar = document.getElementById("bar");
+  const scoreEl = document.getElementById("score");
+  const buttons = [...document.querySelectorAll(".size")];
+  let round, score, items, current;
+
+  function start() {
+    round = 0;
+    score = 0;
+    scoreEl.textContent = 0;
+    bar.style.width = "0%";
+    items = sample(TRANSPORT, ROUNDS);
+    newRound();
+  }
+
+  function newRound() {
+    current = items[round];
+    emojiEl.textContent = current[1];
+    wordEl.textContent = current[0];
+    explain.innerHTML = "";
+    nextBtn.classList.remove("show");
+    buttons.forEach(b => { b.disabled = false; b.classList.remove("right", "wrong"); });
+    speak(current[0]);
+  }
+
+  function choose(btn) {
+    const [word, emoji, size] = current;
+    buttons.forEach(b => { b.disabled = true; });
+    const correct = btn.dataset.size === size;
+    if (correct) {
+      score++;
+      scoreEl.textContent = score;
+      btn.classList.add("right");
+      flash(btn, "pop");
+    } else {
+      btn.classList.add("wrong");
+      flash(btn, "shake");
+      buttons.find(b => b.dataset.size === size).classList.add("right");
+      explain.innerHTML = `${emoji} <b>${word}</b> is ${size}`;
+    }
+    round++;
+    bar.style.width = (round / ROUNDS * 100) + "%";
+    nextBtn.textContent = round >= ROUNDS ? "Finish" : "Next";
+    nextBtn.insertAdjacentHTML("afterbegin", ICON_NEXT);
+    nextBtn.classList.add("show");
+  }
+
+  buttons.forEach(b => b.addEventListener("click", () => choose(b)));
+  nextBtn.addEventListener("click", () => {
+    if (round >= ROUNDS) showResult({ score, total: ROUNDS, onAgain: start });
+    else newRound();
+  });
+  document.getElementById("restart").addEventListener("click", start);
+  start();
+</script>
+</body>
+</html>
