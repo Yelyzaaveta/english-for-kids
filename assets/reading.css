@@ -1,0 +1,62 @@
+/* Shared bits for the Reading games (on top of common.css) */
+:root { --vow: #c9b0ff; }
+
+/* Andika: font made for beginner readers (simple a and g) */
+.en { font-family: "Andika", "Rubik", sans-serif; }
+.v { color: var(--vow); }
+.me { color: var(--muted); opacity: .75; }
+
+.task {
+  color: var(--muted);
+  font-size: clamp(16px, 2.8vh, 22px);
+  font-weight: 700;
+  margin: 12px 0 0;
+  text-align: center;
+}
+.explain {
+  min-height: 2.6em;
+  margin-top: 8px;
+  max-width: 620px;
+  text-align: center;
+  font-size: clamp(15px, 2.6vh, 20px);
+  font-weight: 500;
+  color: var(--muted);
+}
+.explain b { color: var(--text); }
+
+/* Translation line: "snake — змія" */
+.tr { font-weight: 700; font-size: clamp(18px, 3vh, 24px); color: var(--text); margin-bottom: 4px; }
+.tr .en { font-weight: 400; }
+.tr .ua { color: var(--yellow); }
+
+/* Round purple sound button */
+.snd {
+  width: clamp(64px, 11vh, 96px); height: clamp(64px, 11vh, 96px);
+  border-radius: 50%;
+  border: 0;
+  display: grid; place-items: center;
+  background: var(--purple); color: #fff;
+  box-shadow: 0 0 0 8px #9b6dff2e, 0 10px 24px #00000050;
+  cursor: pointer;
+  transition: transform .1s, filter .15s;
+}
+.snd:hover { filter: brightness(1.1); }
+.snd:active { transform: scale(.95); }
+.snd svg { width: 46%; height: 46%; }
+.snd.small {
+  width: 48px; height: 48px;
+  box-shadow: none;
+  background: var(--card); color: var(--purple);
+  border: 1px solid var(--card-edge);
+  font-size: 22px;
+}
+.btn.purple { background: var(--purple); color: #fff; }
+
+/* Start screen (speech needs one tap before it can play) */
+.start {
+  text-align: center;
+  max-width: 460px;
+}
+.start .big { font-size: clamp(56px, 12vh, 96px); line-height: 1; }
+.start p { color: var(--muted); font-size: clamp(16px, 2.6vh, 20px); margin: 14px 0 22px; }
+.hidden { display: none !important; }

@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Голосні звуки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Printable worksheet: each .page is one A4 sheet */
+  :root {
+    --ink: #2a2440;
+    --muted: #8a84a3;
+    --line: #ddd6f3;
+    --p: #7c4dff;        /* main purple */
+    --p-dark: #5b2fd6;
+    --p-soft: #f1ecff;   /* light purple fill */
+    --p-mid: #c9b8ff;
+    --paper: #ffffff;
+    --desk: #e9e6f2;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--desk);
+    color: var(--ink);
+    font-family: "Rubik", system-ui, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Screen toolbar */
+  .bar {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; gap: 10px; justify-content: center; align-items: center;
+    padding: 12px 16px;
+    background: rgba(233, 230, 242, .92);
+    backdrop-filter: blur(6px);
+  }
+  .bar a, .bar button {
+    font: 600 15px "Rubik", sans-serif;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--p-mid);
+    background: #fff; color: var(--p-dark);
+    text-decoration: none; cursor: pointer;
+  }
+  .bar button { background: var(--p); color: #fff; border-color: var(--p); }
+  .bar .hint { font-size: 13px; color: var(--muted); }
+
+  .page {
+    width: 210mm; height: 297mm;
+    margin: 16px auto 28px;
+    padding: 13mm 14mm 11mm;
+    background: var(--paper);
+    box-shadow: 0 6px 24px rgba(60, 40, 120, .15);
+    position: relative;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  @media screen and (max-width: 820px) {
+    .page { transform-origin: top left; }
+  }
+
+  /* Page header / footer */
+  .head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 7px; margin-bottom: 9px;
+    border-bottom: 2px solid var(--p-soft);
+    font-size: 11.5px; color: var(--muted);
+    letter-spacing: .5px;
+  }
+  .head b { color: var(--p); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .name { font-size: 12px; }
+  .name span { display: inline-block; width: 46mm; border-bottom: 1px solid var(--line); }
+  .foot {
+    margin-top: auto; padding-top: 6px;
+    display: flex; justify-content: space-between;
+    font-size: 10.5px; color: var(--muted);
+  }
+  .foot .num {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--p-soft); color: var(--p-dark); font-weight: 700;
+  }
+
+  h1 {
+    margin: 0 0 3px;
+    font-size: 25px; font-weight: 800;
+  }
+  h1 .tag {
+    display: inline-block; vertical-align: middle;
+    margin-left: 8px; padding: 3px 10px;
+    font-size: 12px; font-weight: 600; letter-spacing: .5px;
+    color: var(--p-dark); background: var(--p-soft); border-radius: 20px;
+  }
+  .lead { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+
+  /* Exercise block */
+  .ex { margin-bottom: 11px; }
+  .ex-title {
+    display: flex; align-items: center; gap: 8px;
+    margin: 0 0 7px;
+    font-size: 15px; font-weight: 700;
+  }
+  .ex-title .n {
+    flex: none;
+    width: 24px; height: 24px; border-radius: 7px;
+    display: grid; place-items: center;
+    background: var(--p); color: #fff; font-size: 13px;
+  }
+  .ex-title small { font-weight: 400; color: var(--muted); font-size: 12px; }
+
+  /* English words: Andika is made for beginner readers (simple a, g) */
+  .en { font-family: "Andika", "Rubik", sans-serif; }
+  .v { color: var(--p); font-weight: 700; }          /* highlighted vowel */
+  .e-magic { color: var(--p); font-weight: 700; text-decoration: underline wavy var(--p-mid); text-underline-offset: 3px; }
+  .ua { font-size: 11px; color: var(--muted); font-family: "Rubik", sans-serif; }
+
+  /* Rule card */
+  .rule {
+    display: grid; grid-template-columns: 1.3fr 3fr; gap: 12px; align-items: center;
+    padding: 9px 12px;
+    background: var(--p-soft);
+    border-radius: 12px;
+    margin-bottom: 11px;
+  }
+  .rule p { margin: 0; font-size: 12.5px; line-height: 1.4; }
+  .rule p b { color: var(--p-dark); }
+  .sounds { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .sound {
+    background: #fff; border-radius: 9px; padding: 5px 2px; text-align: center;
+  }
+  .sound .L { font: 700 22px "Andika", sans-serif; color: var(--p); line-height: 1.1; }
+  .sound .t { font-size: 11px; color: var(--muted); }
+  .sound .u { font-size: 13px; font-weight: 700; }
+
+  /* Syllable grid */
+  .syl { display: grid; grid-template-columns: 30px repeat(7, 1fr); gap: 5px; }
+  .syl .lab {
+    display: grid; place-items: center;
+    font: 700 18px "Andika", sans-serif; color: #fff;
+    background: var(--p); border-radius: 8px;
+  }
+  .syl .c {
+    text-align: center; padding: 4px 0;
+    font: 400 20px "Andika", sans-serif;
+    border: 1.5px solid var(--line); border-radius: 8px;
+  }
+
+  /* Word columns */
+  .cols { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .col { border: 1.5px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .col .top {
+    text-align: center; padding: 3px 0;
+    background: var(--p-soft); color: var(--p-dark);
+    font: 700 16px "Andika", sans-serif;
+  }
+  .col ul { list-style: none; margin: 0; padding: 4px 8px 6px; }
+  .col li {
+    display: block;
+    font: 400 20px "Andika", sans-serif;
+    padding: 2.5px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .col li:last-child { border-bottom: 0; }
+  .col li .pic { font-size: 16px; float: right; line-height: 26px; }
+
+  /* Minimal-pair rows */
+  .rows { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+  .row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 4px 10px;
+    border: 1.5px solid var(--line); border-radius: 10px;
+    font: 400 20px "Andika", sans-serif;
+  }
+  .row .w { flex: 1; display: flex; justify-content: space-around; }
+  .ticks { display: flex; gap: 4px; }
+  .ticks i {
+    width: 14px; height: 14px; border: 1.5px solid var(--p-mid); border-radius: 50%;
+  }
+  .note { font-size: 11px; color: var(--muted); margin: 5px 0 0; }
+
+  /* Short open words */
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip {
+    padding: 4px 13px;
+    border: 1.5px solid var(--line); border-radius: 20px;
+    font: 400 21px "Andika", sans-serif;
+  }
+  .chip.sep { border: 0; padding: 4px 3px; color: var(--p-mid); }
+
+  /* Magic e pairs */
+  .pairs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px 10px; }
+  .pair {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 5px 10px;
+    border: 1.5px solid var(--line); border-radius: 10px;
+    font: 400 20px "Andika", sans-serif;
+  }
+  .pair .arr { font: 500 12px "Rubik", sans-serif; color: var(--p); }
+  .pair .r { display: flex; align-items: center; gap: 5px; }
+
+  /* Sentences */
+  .sent { list-style: none; margin: 0; padding: 0; }
+  .sent li {
+    display: flex; align-items: center; gap: 10px;
+    font: 400 22px "Andika", sans-serif;
+    padding: 5px 4px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .sent li:last-child { border-bottom: 0; }
+  .sent .pic { font-size: 20px; width: 28px; text-align: center; }
+  .sent .ticks { margin-left: auto; }
+
+  /* Matching (lines) */
+  .match {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 46mm;
+    padding: 0 8mm;
+  }
+  .match .it {
+    display: flex; align-items: center; gap: 10px;
+    height: 42px;
+  }
+  .match .left { justify-content: flex-end; }
+  .match .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--p); flex: none; }
+  .match .pic { font-size: 30px; }
+  .match .word { font: 400 22px "Andika", sans-serif; }
+  .match.sm .it { height: 34px; }
+  .match.sm .word { font-size: 20px; }
+  .match .ukr { font: 500 17px "Rubik", sans-serif; color: var(--ink); }
+
+  /* Missing letter */
+  .gap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .card {
+    border: 1.5px solid var(--line); border-radius: 12px;
+    padding: 6px 4px 8px; text-align: center;
+  }
+  .card .pic { font-size: 32px; line-height: 1.2; }
+  .card .w {
+    font: 400 24px "Andika", sans-serif; letter-spacing: 2px;
+    display: flex; justify-content: center; align-items: flex-end; gap: 3px;
+  }
+  .box {
+    display: inline-block; width: 22px; height: 28px;
+    border: 2px solid var(--p-mid); border-radius: 6px; background: var(--p-soft);
+  }
+  .vowels {
+    display: flex; justify-content: center; gap: 8px; margin-bottom: 8px;
+  }
+  .vowels span {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: grid; place-items: center;
+    font: 700 18px "Andika", sans-serif; color: var(--p-dark);
+    background: var(--p-soft);
+  }
+
+  /* Circle the word */
+  .circ { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 14px; }
+  .circ .q {
+    display: flex; align-items: center; gap: 12px;
+    padding: 3px 10px;
+    border: 1.5px solid var(--line); border-radius: 12px;
+  }
+  .circ .pic { font-size: 28px; width: 38px; text-align: center; }
+  .circ .opts { flex: 1; display: flex; justify-content: space-around; font: 400 21px "Andika", sans-serif; }
+
+  /* Open / closed table */
+  .oc { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+  .oc .w {
+    border: 1.5px solid var(--line); border-radius: 12px;
+    padding: 5px 4px 7px; text-align: center;
+  }
+  .oc .word { font: 400 22px "Andika", sans-serif; margin-bottom: 4px; }
+  .oc .ck { display: flex; justify-content: center; gap: 10px; font-size: 10px; color: var(--muted); }
+  .oc .ck label { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .oc .ck i {
+    width: 16px; height: 16px; border: 1.5px solid var(--p-mid); border-radius: 4px; display: block;
+  }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted); margin-bottom: 7px; }
+  .legend b { color: var(--p-dark); }
+
+  /* Add magic e */
+  .adde { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px 10px; }
+  .adde .a {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 5px 6px;
+    border: 1.5px solid var(--line); border-radius: 10px;
+    font: 400 21px "Andika", sans-serif;
+  }
+  .adde .arr { color: var(--p); font: 500 15px "Rubik", sans-serif; }
+  .adde .box { width: 18px; height: 24px; }
+  .adde .pic { font-size: 20px; }
+
+  /* Odd one out */
+  .odd { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 14px; }
+  .odd .r {
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 5px 8px;
+    border: 1.5px solid var(--line); border-radius: 10px;
+    font: 400 21px "Andika", sans-serif;
+  }
+
+  .star {
+    position: absolute; right: 14mm; bottom: 15mm;
+    font-size: 11px; color: var(--muted); text-align: center;
+  }
+
+  /* Task pages have fewer items: give them more air */
+  .roomy .ex { margin-bottom: 22px; }
+  .roomy .lead { margin-bottom: 16px; }
+  .roomy .match .it { height: 50px; }
+  .roomy .match.sm .it { height: 40px; }
+  .roomy .card { padding: 10px 4px 12px; }
+  .roomy .card .pic { font-size: 40px; }
+  .roomy .circ .q { padding: 8px 10px; }
+  .roomy .oc .w { padding: 9px 4px 10px; }
+  .roomy .adde .a { padding: 10px 6px; }
+  .roomy .odd .r { padding: 10px 8px; }
+
+  @page { size: A4; margin: 0; }
+  @media print {
+    body { background: #fff; }
+    .bar { display: none; }
+    .page { margin: 0; box-shadow: none; break-after: page; }
+    .page:last-child { break-after: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a href="../index.html">← На головну</a>
+  <button onclick="window.print()">Друкувати / зберегти PDF</button>
+  <span class="hint">У вікні друку: A4, поля «Немає», увімкнути «Фонова графіка»</span>
+</div>
+
+<!-- ================= PAGE 1: reading, closed syllable ================= -->
+<section class="page">
+  <div class="head"><b>Vowel sounds · Голосні звуки</b><span class="name">Ім'я: <span></span></span></div>
+
+  <h1>Читаємо: закритий склад <span class="tag">короткий звук</span></h1>
+  <p class="lead">Після голосної стоїть приголосна, вона ніби «закриває» її, тому голосна звучить коротко.</p>
+
+  <div class="rule">
+    <p><b>c<span class="v">a</span>t</b>: голосна <b>a</b> закрита літерою <b>t</b>, тому звучить коротко: [кет].</p>
+    <div class="sounds">
+      <div class="sound"><div class="L">a</div><div class="t">[æ]</div><div class="u">е</div></div>
+      <div class="sound"><div class="L">e</div><div class="t">[e]</div><div class="u">е</div></div>
+      <div class="sound"><div class="L">i</div><div class="t">[ɪ]</div><div class="u">і</div></div>
+      <div class="sound"><div class="L">o</div><div class="t">[ɒ]</div><div class="u">о</div></div>
+      <div class="sound"><div class="L">u</div><div class="t">[ʌ]</div><div class="u">а</div></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">1</span> Прочитай склади <small>рядок за рядком</small></div>
+    <div class="syl">
+      <div class="lab">a</div><div class="c">at</div><div class="c">an</div><div class="c">am</div><div class="c">ap</div><div class="c">ad</div><div class="c">ag</div><div class="c">ab</div>
+      <div class="lab">e</div><div class="c">et</div><div class="c">en</div><div class="c">em</div><div class="c">ep</div><div class="c">ed</div><div class="c">eg</div><div class="c">eb</div>
+      <div class="lab">i</div><div class="c">it</div><div class="c">in</div><div class="c">im</div><div class="c">ip</div><div class="c">id</div><div class="c">ig</div><div class="c">ib</div>
+      <div class="lab">o</div><div class="c">ot</div><div class="c">on</div><div class="c">om</div><div class="c">op</div><div class="c">od</div><div class="c">og</div><div class="c">ob</div>
+      <div class="lab">u</div><div class="c">ut</div><div class="c">un</div><div class="c">um</div><div class="c">up</div><div class="c">ud</div><div class="c">ug</div><div class="c">ub</div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">2</span> Прочитай слова <small>стовпчик за стовпчиком</small></div>
+    <div class="cols">
+      <div class="col"><div class="top">a [е]</div><ul>
+        <li>c<span class="v">a</span>t <span class="pic">🐱</span></li>
+        <li>b<span class="v">a</span>g <span class="pic">👜</span></li>
+        <li>m<span class="v">a</span>p <span class="pic">🗺️</span></li>
+        <li>h<span class="v">a</span>t <span class="pic">🎩</span></li>
+        <li>j<span class="v">a</span>m <span class="pic">🍓</span></li>
+      </ul></div>
+      <div class="col"><div class="top">e [е]</div><ul>
+        <li>p<span class="v">e</span>n <span class="pic">🖊️</span></li>
+        <li>b<span class="v">e</span>d <span class="pic">🛏️</span></li>
+        <li>t<span class="v">e</span>n <span class="pic">🔟</span></li>
+        <li>r<span class="v">e</span>d <span class="pic">🔴</span></li>
+        <li>l<span class="v">e</span>g <span class="pic">🦵</span></li>
+      </ul></div>
+      <div class="col"><div class="top">i [і]</div><ul>
+        <li>p<span class="v">i</span>g <span class="pic">🐷</span></li>
+        <li>s<span class="v">i</span>x <span class="pic">6️⃣</span></li>
+        <li>b<span class="v">i</span>g <span class="pic">🐘</span></li>
+        <li>l<span class="v">i</span>p <span class="pic">👄</span></li>
+        <li>s<span class="v">i</span>t <span class="pic">🪑</span></li>
+      </ul></div>
+      <div class="col"><div class="top">o [о]</div><ul>
+        <li>d<span class="v">o</span>g <span class="pic">🐶</span></li>
+        <li>b<span class="v">o</span>x <span class="pic">📦</span></li>
+        <li>f<span class="v">o</span>x <span class="pic">🦊</span></li>
+        <li>h<span class="v">o</span>t <span class="pic">🔥</span></li>
+        <li>m<span class="v">o</span>p <span class="pic">🧹</span></li>
+      </ul></div>
+      <div class="col"><div class="top">u [а]</div><ul>
+        <li>b<span class="v">u</span>s <span class="pic">🚌</span></li>
+        <li>s<span class="v">u</span>n <span class="pic">☀️</span></li>
+        <li>c<span class="v">u</span>p <span class="pic">☕</span></li>
+        <li>d<span class="v">u</span>ck <span class="pic">🦆</span></li>
+        <li>r<span class="v">u</span>n <span class="pic">🏃</span></li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">3</span> Міняється лише голосна <small>прочитай і зафарбуй кружечок за кожне прочитання</small></div>
+    <div class="rows">
+      <div class="row"><div class="w"><span>c<span class="v">a</span>p</span><span>c<span class="v">o</span>p</span><span>c<span class="v">u</span>p</span></div><div class="ticks"><i></i><i></i><i></i></div></div>
+      <div class="row"><div class="w"><span>b<span class="v">a</span>g</span><span>b<span class="v">i</span>g</span><span>b<span class="v">u</span>g</span></div><div class="ticks"><i></i><i></i><i></i></div></div>
+      <div class="row"><div class="w"><span>p<span class="v">a</span>n</span><span>p<span class="v">e</span>n</span><span>p<span class="v">i</span>n</span></div><div class="ticks"><i></i><i></i><i></i></div></div>
+      <div class="row"><div class="w"><span>h<span class="v">a</span>t</span><span>h<span class="v">i</span>t</span><span>h<span class="v">o</span>t</span></div><div class="ticks"><i></i><i></i><i></i></div></div>
+      <div class="row"><div class="w"><span>t<span class="v">a</span>n</span><span>t<span class="v">e</span>n</span><span>t<span class="v">i</span>n</span></div><div class="ticks"><i></i><i></i><i></i></div></div>
+      <div class="row"><div class="w"><span>b<span class="v">e</span>d</span><span>b<span class="v">a</span>d</span><span>b<span class="v">u</span>d</span></div><div class="ticks"><i></i><i></i><i></i></div></div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Читання · закритий склад</span><span class="num">1</span></div>
+</section>
+
+<!-- ================= PAGE 2: reading, open syllable ================= -->
+<section class="page">
+  <div class="head"><b>Vowel sounds · Голосні звуки</b><span>Читання</span></div>
+
+  <h1>Читаємо: відкритий склад <span class="tag">голосна звучить, як в алфавіті</span></h1>
+  <p class="lead">Голосна стоїть у кінці або після неї є приголосна + <b>e</b>. Ця <b>e</b> не читається, це «чарівна e».</p>
+
+  <div class="rule">
+    <p><b>c<span class="v">a</span>k<span class="e-magic">e</span></b>: чарівна <b>e</b> мовчить, а <b>a</b> звучить, як в алфавіті: [кейк].</p>
+    <div class="sounds">
+      <div class="sound"><div class="L">a</div><div class="t">[eɪ]</div><div class="u">ей</div></div>
+      <div class="sound"><div class="L">e</div><div class="t">[iː]</div><div class="u">і</div></div>
+      <div class="sound"><div class="L">i</div><div class="t">[aɪ]</div><div class="u">ай</div></div>
+      <div class="sound"><div class="L">o</div><div class="t">[əʊ]</div><div class="u">оу</div></div>
+      <div class="sound"><div class="L">u</div><div class="t">[juː]</div><div class="u">ю</div></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">4</span> Коротенькі слова <small>голосна в самому кінці</small></div>
+    <div class="chips">
+      <span class="chip">m<span class="v">e</span></span><span class="chip">h<span class="v">e</span></span><span class="chip">w<span class="v">e</span></span><span class="chip">b<span class="v">e</span></span>
+      <span class="chip sep">•</span>
+      <span class="chip">g<span class="v">o</span></span><span class="chip">n<span class="v">o</span></span><span class="chip">s<span class="v">o</span></span>
+      <span class="chip sep">•</span>
+      <span class="chip">h<span class="v">i</span></span><span class="chip"><span class="v">I</span></span>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">5</span> Слова з чарівною e <small>стовпчик за стовпчиком</small></div>
+    <div class="cols">
+      <div class="col"><div class="top">a [ей]</div><ul>
+        <li>c<span class="v">a</span>k<span class="e-magic">e</span> <span class="pic">🎂</span></li>
+        <li>n<span class="v">a</span>m<span class="e-magic">e</span> <span class="pic">🏷️</span></li>
+        <li>g<span class="v">a</span>m<span class="e-magic">e</span> <span class="pic">🎲</span></li>
+        <li>l<span class="v">a</span>k<span class="e-magic">e</span> <span class="pic">🏞️</span></li>
+        <li>g<span class="v">a</span>t<span class="e-magic">e</span> <span class="pic">🚪</span></li>
+      </ul></div>
+      <div class="col"><div class="top">e [і]</div><ul>
+        <li>P<span class="v">e</span>t<span class="e-magic">e</span> <span class="pic">👦</span></li>
+        <li>th<span class="v">e</span>s<span class="e-magic">e</span> <span class="pic">👉</span></li>
+        <li>m<span class="v">e</span> <span class="pic">🙋</span></li>
+        <li>h<span class="v">e</span> <span class="pic">👨</span></li>
+        <li>w<span class="v">e</span> <span class="pic">👫</span></li>
+      </ul></div>
+      <div class="col"><div class="top">i [ай]</div><ul>
+        <li>k<span class="v">i</span>t<span class="e-magic">e</span> <span class="pic">🪁</span></li>
+        <li>b<span class="v">i</span>k<span class="e-magic">e</span> <span class="pic">🚲</span></li>
+        <li>f<span class="v">i</span>v<span class="e-magic">e</span> <span class="pic">5️⃣</span></li>
+        <li>n<span class="v">i</span>n<span class="e-magic">e</span> <span class="pic">9️⃣</span></li>
+        <li>sm<span class="v">i</span>l<span class="e-magic">e</span> <span class="pic">😊</span></li>
+      </ul></div>
+      <div class="col"><div class="top">o [оу]</div><ul>
+        <li>h<span class="v">o</span>m<span class="e-magic">e</span> <span class="pic">🏠</span></li>
+        <li>n<span class="v">o</span>s<span class="e-magic">e</span> <span class="pic">👃</span></li>
+        <li>r<span class="v">o</span>s<span class="e-magic">e</span> <span class="pic">🌹</span></li>
+        <li>b<span class="v">o</span>n<span class="e-magic">e</span> <span class="pic">🦴</span></li>
+        <li>n<span class="v">o</span>t<span class="e-magic">e</span> <span class="pic">📝</span></li>
+      </ul></div>
+      <div class="col"><div class="top">u [ю]</div><ul>
+        <li>c<span class="v">u</span>b<span class="e-magic">e</span> <span class="pic">🧊</span></li>
+        <li>t<span class="v">u</span>b<span class="e-magic">e</span> <span class="pic">🧪</span></li>
+        <li>c<span class="v">u</span>t<span class="e-magic">e</span> <span class="pic">🐰</span></li>
+        <li>m<span class="v">u</span>l<span class="e-magic">e</span> <span class="pic">🫏</span></li>
+        <li><span class="v">u</span>s<span class="e-magic">e</span> <span class="pic">🛠️</span></li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">6</span> Додали e, і слово змінилось <small>прочитай обидва слова</small></div>
+    <div class="pairs">
+      <div class="pair"><span>c<span class="v">a</span>p</span><span class="arr">+e →</span><span>c<span class="v">a</span>p<span class="e-magic">e</span></span></div>
+      <div class="pair"><span>k<span class="v">i</span>t</span><span class="arr">+e →</span><span>k<span class="v">i</span>t<span class="e-magic">e</span></span></div>
+      <div class="pair"><span>h<span class="v">o</span>p</span><span class="arr">+e →</span><span>h<span class="v">o</span>p<span class="e-magic">e</span></span></div>
+      <div class="pair"><span>t<span class="v">a</span>p</span><span class="arr">+e →</span><span>t<span class="v">a</span>p<span class="e-magic">e</span></span></div>
+      <div class="pair"><span>p<span class="v">i</span>n</span><span class="arr">+e →</span><span>p<span class="v">i</span>n<span class="e-magic">e</span></span></div>
+      <div class="pair"><span>n<span class="v">o</span>t</span><span class="arr">+e →</span><span>n<span class="v">o</span>t<span class="e-magic">e</span></span></div>
+      <div class="pair"><span>p<span class="v">e</span>t</span><span class="arr">+e →</span><span>P<span class="v">e</span>t<span class="e-magic">e</span></span></div>
+      <div class="pair"><span>c<span class="v">u</span>b</span><span class="arr">+e →</span><span>c<span class="v">u</span>b<span class="e-magic">e</span></span></div>
+      <div class="pair"><span>t<span class="v">u</span>b</span><span class="arr">+e →</span><span>t<span class="v">u</span>b<span class="e-magic">e</span></span></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">7</span> Прочитай речення <small>зафарбуй кружечок, коли прочитав</small></div>
+    <ul class="sent">
+      <li><span class="pic">🐱</span>A fat cat.<span class="ticks"><i></i><i></i><i></i></span></li>
+      <li><span class="pic">🐷</span>A big pink pig.<span class="ticks"><i></i><i></i><i></i></span></li>
+      <li><span class="pic">🪁</span>Pete has a red kite.<span class="ticks"><i></i><i></i><i></i></span></li>
+      <li><span class="pic">🚲</span>I like my bike.<span class="ticks"><i></i><i></i><i></i></span></li>
+      <li><span class="pic">🏠</span>Go home, Bob!<span class="ticks"><i></i><i></i><i></i></span></li>
+    </ul>
+    <p class="note">Слова <b class="en">my</b> [май] і <b class="en">has</b> [хез] — для довідки: <b class="en">y</b> в кінці читається як [ай], <b class="en">s</b> тут звучить як [з].</p>
+  </div>
+
+  <div class="foot"><span>Читання · відкритий склад</span><span class="num">2</span></div>
+</section>
+
+<!-- ================= PAGE 3: tasks ================= -->
+<section class="page roomy">
+  <div class="head"><b>Vowel sounds · Голосні звуки</b><span class="name">Ім'я: <span></span></span></div>
+
+  <h1>Завдання <span class="tag">закритий склад</span></h1>
+  <p class="lead">Писати майже не треба: з'єднуй, обводь і вписуй одну літеру.</p>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">1</span> З'єднай картинку зі словом</div>
+    <div class="match">
+      <div>
+        <div class="it left"><span class="pic">🐶</span><span class="dot"></span></div>
+        <div class="it left"><span class="pic">☀️</span><span class="dot"></span></div>
+        <div class="it left"><span class="pic">🐱</span><span class="dot"></span></div>
+        <div class="it left"><span class="pic">🐷</span><span class="dot"></span></div>
+        <div class="it left"><span class="pic">🛏️</span><span class="dot"></span></div>
+        <div class="it left"><span class="pic">📦</span><span class="dot"></span></div>
+      </div>
+      <div>
+        <div class="it"><span class="dot"></span><span class="word">cat</span></div>
+        <div class="it"><span class="dot"></span><span class="word">box</span></div>
+        <div class="it"><span class="dot"></span><span class="word">pig</span></div>
+        <div class="it"><span class="dot"></span><span class="word">dog</span></div>
+        <div class="it"><span class="dot"></span><span class="word">sun</span></div>
+        <div class="it"><span class="dot"></span><span class="word">bed</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">2</span> Впиши пропущену голосну <small>подивись на картинку</small></div>
+    <div class="vowels"><span>a</span><span>e</span><span>i</span><span>o</span><span>u</span></div>
+    <div class="gap">
+      <div class="card"><div class="pic">🐱</div><div class="w">c<span class="box"></span>t</div></div>
+      <div class="card"><div class="pic">🚌</div><div class="w">b<span class="box"></span>s</div></div>
+      <div class="card"><div class="pic">🖊️</div><div class="w">p<span class="box"></span>n</div></div>
+      <div class="card"><div class="pic">🦊</div><div class="w">f<span class="box"></span>x</div></div>
+      <div class="card"><div class="pic">🐷</div><div class="w">p<span class="box"></span>g</div></div>
+      <div class="card"><div class="pic">🎩</div><div class="w">h<span class="box"></span>t</div></div>
+      <div class="card"><div class="pic">☕</div><div class="w">c<span class="box"></span>p</div></div>
+      <div class="card"><div class="pic">🔟</div><div class="w">t<span class="box"></span>n</div></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">3</span> Обведи слово, яке підходить до картинки</div>
+    <div class="circ">
+      <div class="q"><span class="pic">🐶</span><div class="opts"><span>dig</span><span>dog</span><span>dug</span></div></div>
+      <div class="q"><span class="pic">🗺️</span><div class="opts"><span>mop</span><span>map</span><span>mup</span></div></div>
+      <div class="q"><span class="pic">☀️</span><div class="opts"><span>sun</span><span>sin</span><span>son</span></div></div>
+      <div class="q"><span class="pic">6️⃣</span><div class="opts"><span>sox</span><span>sax</span><span>six</span></div></div>
+      <div class="q"><span class="pic">🛏️</span><div class="opts"><span>bad</span><span>bed</span><span>bud</span></div></div>
+      <div class="q"><span class="pic">👜</span><div class="opts"><span>bug</span><span>big</span><span>bag</span></div></div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Завдання · закритий склад</span><span class="num">3</span></div>
+</section>
+
+<!-- ================= PAGE 4: tasks ================= -->
+<section class="page roomy">
+  <div class="head"><b>Vowel sounds · Голосні звуки</b><span>Завдання</span></div>
+
+  <h1>Завдання <span class="tag">відкритий чи закритий?</span></h1>
+  <p class="lead">Згадай чарівну <b>e</b>: вона мовчить, а голосна звучить, як в алфавіті.</p>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">4</span> Закритий чи відкритий склад? <small>постав галочку</small></div>
+    <div class="legend"><span><b>З</b> — закритий (короткий звук)</span><span><b>В</b> — відкритий (як в алфавіті)</span></div>
+    <div class="oc">
+      <div class="w"><div class="word">cat</div><div class="ck"><label><i></i>З</label><label><i></i>В</label></div></div>
+      <div class="w"><div class="word">cake</div><div class="ck"><label><i></i>З</label><label><i></i>В</label></div></div>
+      <div class="w"><div class="word">pin</div><div class="ck"><label><i></i>З</label><label><i></i>В</label></div></div>
+      <div class="w"><div class="word">kite</div><div class="ck"><label><i></i>З</label><label><i></i>В</label></div></div>
+      <div class="w"><div class="word">go</div><div class="ck"><label><i></i>З</label><label><i></i>В</label></div></div>
+      <div class="w"><div class="word">hot</div><div class="ck"><label><i></i>З</label><label><i></i>В</label></div></div>
+      <div class="w"><div class="word">home</div><div class="ck"><label><i></i>З</label><label><i></i>В</label></div></div>
+      <div class="w"><div class="word">bus</div><div class="ck"><label><i></i>З</label><label><i></i>В</label></div></div>
+      <div class="w"><div class="word">cube</div><div class="ck"><label><i></i>З</label><label><i></i>В</label></div></div>
+      <div class="w"><div class="word">me</div><div class="ck"><label><i></i>З</label><label><i></i>В</label></div></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">5</span> З'єднай слово з тим, як воно звучить</div>
+    <div class="match sm">
+      <div>
+        <div class="it left"><span class="word">kit</span><span class="dot"></span></div>
+        <div class="it left"><span class="word">cake</span><span class="dot"></span></div>
+        <div class="it left"><span class="word">hope</span><span class="dot"></span></div>
+        <div class="it left"><span class="word">cat</span><span class="dot"></span></div>
+        <div class="it left"><span class="word">kite</span><span class="dot"></span></div>
+        <div class="it left"><span class="word">hop</span><span class="dot"></span></div>
+      </div>
+      <div>
+        <div class="it"><span class="dot"></span><span class="ukr">[кет]</span></div>
+        <div class="it"><span class="dot"></span><span class="ukr">[кайт]</span></div>
+        <div class="it"><span class="dot"></span><span class="ukr">[хоп]</span></div>
+        <div class="it"><span class="dot"></span><span class="ukr">[кейк]</span></div>
+        <div class="it"><span class="dot"></span><span class="ukr">[хоуп]</span></div>
+        <div class="it"><span class="dot"></span><span class="ukr">[кіт]</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">6</span> Допиши чарівну e і прочитай нове слово</div>
+    <div class="adde">
+      <div class="a">kit <span class="arr">→</span> kit<span class="box"></span> <span class="pic">🪁</span></div>
+      <div class="a">cub <span class="arr">→</span> cub<span class="box"></span> <span class="pic">🧊</span></div>
+      <div class="a">not <span class="arr">→</span> not<span class="box"></span> <span class="pic">📝</span></div>
+      <div class="a">cap <span class="arr">→</span> cap<span class="box"></span> <span class="pic">🦸</span></div>
+      <div class="a">pin <span class="arr">→</span> pin<span class="box"></span> <span class="pic">🌲</span></div>
+      <div class="a">tub <span class="arr">→</span> tub<span class="box"></span> <span class="pic">🧪</span></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">7</span> Знайди зайве слово й обведи його <small>голосна звучить інакше</small></div>
+    <div class="odd">
+      <div class="r"><span>cat</span><span>map</span><span>cake</span><span>bag</span></div>
+      <div class="r"><span>pig</span><span>kite</span><span>six</span><span>big</span></div>
+      <div class="r"><span>dog</span><span>box</span><span>hot</span><span>home</span></div>
+      <div class="r"><span>cube</span><span>bus</span><span>cup</span><span>sun</span></div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Молодець! ⭐ Завдання · відкритий склад</span><span class="num">4</span></div>
+</section>
+
+</body>
+</html>

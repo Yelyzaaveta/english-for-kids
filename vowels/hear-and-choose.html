@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hear &amp; Choose</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/reading.css">
+<style>
+  .listen { display: flex; align-items: center; gap: 18px; margin: clamp(12px, 3vh, 28px) 0; }
+  .opts {
+    display: grid;
+    grid-template-columns: repeat(2, min(42vw, 280px));
+    gap: clamp(10px, 2vw, 16px);
+  }
+  .opt {
+    height: clamp(64px, 12vh, 100px);
+    border-radius: 16px;
+    border: 2px solid var(--card-edge);
+    background: linear-gradient(180deg, var(--card-top), var(--card));
+    color: var(--text);
+    font: 400 clamp(26px, 5.5vh, 44px) "Andika", sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 20px #00000040;
+    transition: border-color .15s, background .2s, opacity .3s, transform .1s;
+  }
+  .opt:hover { border-color: var(--purple); }
+  .opt:active { transform: scale(.97); }
+  .opt.right { border-color: var(--green); background: #3ddc8422; }
+  .opt.wrong { border-color: var(--red); opacity: .55; }
+  .opt small { display: block; font: 500 clamp(12px, 2vh, 16px) "Rubik", sans-serif; color: var(--yellow); }
+  .opt:disabled { cursor: default; }
+  .reveal {
+    min-height: clamp(54px, 9vh, 80px);
+    display: flex; align-items: center; gap: 12px;
+    font-size: clamp(34px, 7vh, 60px);
+  }
+  .reveal .w { font: 700 clamp(24px, 4.5vh, 36px) "Andika", sans-serif; color: var(--green); }
+  .reveal .ua { font: 700 clamp(20px, 3.6vh, 30px) "Rubik", sans-serif; color: var(--yellow); }
+  .reveal.no { font-size: clamp(16px, 2.6vh, 20px); color: var(--muted); }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Hear <span class="accent">&amp; Choose</span></h1>
+  <div class="score" id="score">0</div>
+</header>
+
+<main>
+  <div class="start" id="startBox">
+    <div class="big">👂</div>
+    <p>Прозвучить слово. Знайди, як воно пишеться.<br>30 слів на <b>a, b, c, d</b>.</p>
+    <button class="btn purple" id="go">Почати</button>
+  </div>
+
+  <div class="hidden" id="game" style="display:flex;flex-direction:column;align-items:center;width:100%">
+    <div class="progress"><div id="bar"></div></div>
+    <p class="task">Послухай і знайди слово</p>
+    <div class="listen">
+      <button class="snd" id="say" aria-label="Послухати" data-icon="sound"></button>
+      <button class="snd small" id="slow" aria-label="Повільно" title="Повільно">🐢</button>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="reveal" id="reveal"></div>
+  </div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script>
+  // Simple (often sporty) words on a, b, c, d — different lengths, so the child can
+  // start reading by length and first letters, then by the whole word.
+  const POOL = {
+    a: [["ant","🐜","мураха"],["arm","💪","рука"],["axe","🪓","сокира"],["apple","🍎","яблуко"],["arrow","🏹","стріла"],["archer","🏹","лучник"],
+        ["anchor","⚓","якір"],["acrobat","🤸","акробат"],["athlete","🏃","спортсмен"],["archery","🎯","стрільба з лука"],["alligator","🐊","алігатор"],["astronaut","🧑‍🚀","астронавт"]],
+    b: [["bat","🏏","бита"],["bus","🚌","автобус"],["ball","⚽","м'яч"],["bike","🚲","велосипед"],["boat","⛵","човен"],["boots","🥾","черевики"],
+        ["boxer","🥊","боксер"],["basket","🧺","кошик"],["bowling","🎳","боулінг"],["baseball","⚾","бейсбол"],["badminton","🏸","бадмінтон"],["basketball","🏀","баскетбол"]],
+    c: [["cap","🧢","кепка"],["cup","🏆","кубок"],["car","🚗","машина"],["cat","🐱","кіт"],["chess","♟️","шахи"],["canoe","🛶","каное"],
+        ["coach","📣","тренер"],["cricket","🏏","крикет"],["cycling","🚴","велоспорт"],["climbing","🧗","скелелазіння"],["champion","🥇","чемпіон"],["crocodile","🐊","крокодил"]],
+    d: [["dog","🐶","собака"],["duck","🦆","качка"],["dart","🎯","дротик"],["dice","🎲","кубики"],["drum","🥁","барабан"],["diver","🤿","дайвер"],
+        ["dance","💃","танець"],["diving","🤿","пірнання"],["dolphin","🐬","дельфін"],["dragon","🐉","дракон"],["dumbbell","🏋️","гантеля"],["dinosaur","🦕","динозавр"]],
+  };
+  const ALL = Object.values(POOL).flat().map(([w, e, ua]) => ({ w, e, ua }));
+  const ROUNDS = 30;
+
+  const $ = id => document.getElementById(id);
+  const optsEl = $("opts"), reveal = $("reveal"), bar = $("bar"), scoreEl = $("score");
+  let queue, round, score, firstTry, locked, target;
+
+  // 3 distractors with the same first letter, preferring lengths not used yet
+  function optionsFor(t) {
+    const cands = shuffle(ALL.filter(x => x.w[0] === t.w[0] && x.w !== t.w));
+    const out = [t];
+    const lens = new Set([t.w.length]);
+    for (const c of cands) {
+      if (out.length === 4) break;
+      if (!lens.has(c.w.length)) { out.push(c); lens.add(c.w.length); }
+    }
+    for (const c of cands) {
+      if (out.length === 4) break;
+      if (!out.includes(c)) out.push(c);
+    }
+    return shuffle(out);
+  }
+
+  function start() {
+    queue = sample(ALL, ROUNDS);
+    round = 0; score = 0;
+    scoreEl.textContent = 0;
+    bar.style.width = "0%";
+    $("startBox").classList.add("hidden");
+    $("game").classList.remove("hidden");
+    newRound();
+  }
+
+  function newRound() {
+    target = queue[round];
+    firstTry = true; locked = false;
+    reveal.className = "reveal";
+    reveal.innerHTML = "";
+    optsEl.innerHTML = "";
+    optionsFor(target).forEach(o => {
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.textContent = o.w;
+      b.addEventListener("click", () => choose(b, o));
+      optsEl.appendChild(b);
+    });
+    setTimeout(() => speak(target.w), 250);
+  }
+
+  function choose(btn, o) {
+    if (locked) return;
+    if (o !== target) {
+      firstTry = false;
+      btn.classList.add("wrong");
+      btn.disabled = true;
+      btn.innerHTML = `${o.w}<small>${o.ua}</small>`;
+      flash(btn, "shake");
+      reveal.className = "reveal no";
+      reveal.innerHTML = `Ні, <b class="en">&nbsp;${o.w}&nbsp;</b> — це «${o.ua}». Послухай ще раз.`;
+      setTimeout(() => speak(target.w), 450);
+      return;
+    }
+    locked = true;
+    if (firstTry) { score++; scoreEl.textContent = score; }
+    round++;
+    bar.style.width = (round / ROUNDS * 100) + "%";
+    btn.classList.add("right");
+    flash(btn, "pop");
+    optsEl.querySelectorAll(".opt").forEach(b => b.disabled = true);
+    reveal.className = "reveal";
+    reveal.innerHTML = `<span>${o.e}</span><span class="w">${o.w}</span><span class="ua">— ${o.ua}</span>`;
+    speak(o.w);
+    setTimeout(() => {
+      if (round >= ROUNDS) showResult({ score, total: ROUNDS, onAgain: start });
+      else newRound();
+    }, 1500);
+  }
+
+  $("go").addEventListener("click", start);
+  $("say").addEventListener("click", () => target && speak(target.w));
+  $("slow").addEventListener("click", () => target && speak(target.w, 0.5));
+  $("restart").addEventListener("click", start);
+</script>
+</body>
+</html>
