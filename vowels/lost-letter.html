@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lost Letter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/reading.css">
+<style>
+  .pic { font-size: clamp(70px, 16vh, 140px); line-height: 1; margin: clamp(8px, 2vh, 20px) 0 6px; }
+  .wordrow { display: flex; align-items: center; gap: 16px; }
+  .letters { display: flex; gap: clamp(6px, 1.2vw, 10px); }
+  .tile {
+    width: clamp(48px, 9vh, 76px); height: clamp(60px, 11vh, 92px);
+    display: grid; place-items: center;
+    border-radius: 14px;
+    background: var(--card);
+    border: 2px solid var(--card-edge);
+    font: 400 clamp(34px, 7vh, 56px) "Andika", sans-serif;
+  }
+  .tile.gap { border: 2px dashed var(--purple); background: #9b6dff1a; color: var(--vow); }
+  .tile.filled { border-style: solid; border-color: var(--green); color: var(--green); }
+  .tile.me { color: var(--muted); }
+  .keys { display: flex; gap: clamp(8px, 2vw, 16px); margin-top: clamp(16px, 4vh, 34px); }
+  .key {
+    width: clamp(56px, 10vh, 84px); height: clamp(56px, 10vh, 84px);
+    border-radius: 50%;
+    border: 2px solid var(--card-edge);
+    background: linear-gradient(180deg, var(--card-top), var(--card));
+    color: var(--text);
+    font: 700 clamp(28px, 5.5vh, 44px) "Andika", sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 20px #00000040;
+    transition: border-color .15s, transform .1s, opacity .3s;
+  }
+  .key:hover { border-color: var(--purple); }
+  .key:active { transform: scale(.94); }
+  .key.wrong { border-color: var(--red); opacity: .35; }
+  .key:disabled { cursor: default; }
+  #next { display: none; }
+  #next.show { display: inline-flex; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Lost <span class="accent">Letter</span></h1>
+  <div class="score" id="score">0</div>
+</header>
+
+<main>
+  <div class="progress"><div id="bar"></div></div>
+  <p class="task">Яка буква загубилась? Подивись на картинку</p>
+  <div class="pic" id="pic"></div>
+  <div class="wordrow">
+    <div class="letters" id="letters"></div>
+    <button class="snd small" id="say" aria-label="Послухати" data-icon="sound"></button>
+  </div>
+  <div class="keys" id="keys"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+  <button class="btn purple" id="next" data-icon="next">Next</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/reading.js"></script>
+<script>
+  // Short words of the same kind as on the worksheet (closed syllable and magic e),
+  // but different words so the game is new practice, not a repeat.
+  const POOL = [
+    ["van","🚐","фургон"],["can","🥫","бляшанка"],["ham","🍖","шинка"],["rat","🐀","щур"],["pan","🍳","сковорідка"],
+    ["hen","🐔","курка"],["net","🥅","сітка"],["web","🕸️","павутина"],["jet","✈️","реактивний літак"],["egg","🥚","яйце"],
+    ["bin","🗑️","смітник"],["zip","🤐","застібка-блискавка"],["kid","🧒","дитина"],["fish","🐟","риба"],["milk","🥛","молоко"],
+    ["log","🪵","колода"],["pot","🍲","каструля"],["sock","🧦","шкарпетка"],["frog","🐸","жаба"],
+    ["bug","🐛","жук"],["nut","🥜","горіх"],["drum","🥁","барабан"],["plug","🔌","штепсель"],
+    ["snake","🐍","змія"],["whale","🐋","кит"],["plane","🛩️","літак"],["skate","⛸️","ковзан"],
+    ["dice","🎲","кубики"],["mice","🐭","миші"],["rice","🍚","рис"],["ice","🧊","лід"],
+    ["rope","🪢","мотузка"],["cone","🍦","ріжок"],["globe","🌍","глобус"],["stone","🪨","камінь"],["smoke","💨","дим"],
+  ];
+  const ROUNDS = 20;
+  const VOWELS = ["a", "e", "i", "o", "u"];
+
+  const $ = id => document.getElementById(id);
+  const lettersEl = $("letters"), keysEl = $("keys"), explain = $("explain");
+  const bar = $("bar"), scoreEl = $("score"), nextBtn = $("next");
+  let queue, round, score, firstTry, done, word, trans, hideIdx;
+
+  function start() {
+    queue = sample(POOL, ROUNDS);
+    round = 0; score = 0;
+    scoreEl.textContent = 0;
+    bar.style.width = "0%";
+    newRound();
+  }
+
+  function newRound() {
+    const [w, e, ua] = queue[round];
+    word = w;
+    trans = ua;
+    const info = vowelInfo(w);
+    // Magic-e words: sometimes the silent e is the lost letter
+    hideIdx = info.magic && Math.random() < 0.4 ? info.magicIdx : info.v;
+    firstTry = true; done = false;
+    $("pic").textContent = e;
+    explain.innerHTML = "";
+    nextBtn.classList.remove("show");
+    lettersEl.innerHTML = [...w].map((ch, k) =>
+      k === hideIdx ? `<div class="tile gap" id="gap"></div>` : `<div class="tile">${ch}</div>`
+    ).join("");
+    keysEl.innerHTML = "";
+    VOWELS.forEach(l => {
+      const b = document.createElement("button");
+      b.className = "key";
+      b.textContent = l;
+      b.addEventListener("click", () => choose(b, l));
+      keysEl.appendChild(b);
+    });
+  }
+
+  function choose(btn, l) {
+    if (done) return;
+    if (l !== word[hideIdx]) {
+      firstTry = false;
+      btn.classList.add("wrong");
+      btn.disabled = true;
+      flash(btn, "shake");
+      explain.innerHTML = `Не <b>${l}</b>. Подивись на картинку: це «${trans}».`;
+      return;
+    }
+    done = true;
+    if (firstTry) { score++; scoreEl.textContent = score; }
+    round++;
+    bar.style.width = (round / ROUNDS * 100) + "%";
+    const gap = $("gap");
+    gap.textContent = l;
+    gap.classList.add("filled");
+    flash(gap, "pop");
+    keysEl.querySelectorAll(".key").forEach(k => k.disabled = true);
+    // Show the whole word with the vowel highlighted, then say it
+    setTimeout(() => {
+      const info = vowelInfo(word);
+      lettersEl.querySelectorAll(".tile").forEach((t, k) => {
+        t.className = "tile" + (k === info.v ? " v" : k === info.magicIdx ? " me" : "");
+        t.textContent = word[k];
+      });
+      explain.innerHTML = `<div class="tr"><span class="en">${word}</span> — <span class="ua">${trans}</span></div>${vowelRule(word)}`;
+      speak(word);
+    }, 500);
+    nextBtn.lastChild.textContent = round >= ROUNDS ? "Finish" : "Next";
+    nextBtn.classList.add("show");
+  }
+
+  nextBtn.addEventListener("click", () => {
+    if (round >= ROUNDS) showResult({ score, total: ROUNDS, onAgain: start });
+    else newRound();
+  });
+  $("say").addEventListener("click", () => speak(word));
+  $("restart").addEventListener("click", start);
+  start();
+</script>
+</body>
+</html>
