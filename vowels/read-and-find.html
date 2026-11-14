@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Read &amp; Find</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/reading.css">
+<style>
+  .wordrow { display: flex; align-items: center; gap: 14px; margin: clamp(10px, 2.5vh, 24px) 0 4px; }
+  .word {
+    font: 400 clamp(54px, 12vh, 104px) "Andika", sans-serif;
+    letter-spacing: 4px;
+    line-height: 1.1;
+  }
+  .cards {
+    --w: min(40vw, 20vh, 160px);
+    display: grid;
+    grid-template-columns: repeat(4, var(--w));
+    gap: clamp(10px, 2vw, 18px);
+    margin-top: clamp(10px, 2.5vh, 24px);
+  }
+  @media (max-aspect-ratio: 4/5) {
+    .cards { grid-template-columns: repeat(2, var(--w)); }
+  }
+  .card {
+    height: calc(var(--w) * 1.15);
+    border-radius: 16px;
+    border: 2px solid var(--card-edge);
+    background: linear-gradient(180deg, var(--card-top), var(--card));
+    color: var(--text);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px #00000040;
+    transition: border-color .15s, background .2s, opacity .3s, transform .1s;
+  }
+  .card:hover { border-color: var(--purple); }
+  .card:active { transform: scale(.97); }
+  .card .e { font-size: calc(var(--w) * .46); line-height: 1; }
+  .card .l { font: 400 calc(var(--w) * .17) "Andika", sans-serif; min-height: 1.3em; color: var(--muted); line-height: 1.1; }
+  .card .t { font: 500 calc(var(--w) * .1) "Rubik", sans-serif; min-height: 1.2em; color: var(--yellow); }
+  .card.right { border-color: var(--green); background: #3ddc8422; }
+  .card.right .l { color: var(--green); }
+  .card.wrong { border-color: var(--red); opacity: .45; }
+  .card:disabled { cursor: default; }
+  #next { display: none; }
+  #next.show { display: inline-flex; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Read <span class="accent">&amp; Find</span></h1>
+  <div class="score" id="score">0</div>
+</header>
+
+<main>
+  <div class="progress"><div id="bar"></div></div>
+  <p class="task">Прочитай слово сам і знайди картинку</p>
+  <div class="wordrow">
+    <div class="word" id="word"></div>
+    <button class="snd small" id="hint" aria-label="Підказка" title="Підказка">💡</button>
+  </div>
+  <div class="cards" id="cards"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+  <button class="btn purple" id="next" data-icon="next">Next</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/reading.js"></script>
+<script>
+  // Groups of words that look alike: the child has to read the vowel
+  // (cap / cup) and notice magic e (cub / cube), not guess by the first letter.
+  const FAMILIES = [
+    [["cap","🧢","кепка"],["cup","☕","чашка"],["cape","🦸","плащ"]],
+    [["hat","🎩","капелюх"],["hut","🛖","хатинка"],["hot","🔥","гарячий"]],
+    [["pan","🍳","сковорідка"],["pen","🖊️","ручка"],["pin","📌","кнопка"],["pine","🌲","сосна"]],
+    [["kit","🧰","набір"],["kite","🪁","повітряний змій"],["bike","🚲","велосипед"],["five","5️⃣","п'ять"]],
+    [["cub","🐻","ведмежа"],["cube","🧊","кубик"],["cone","🍦","ріжок"],["bone","🦴","кістка"]],
+    [["tub","🛁","ванна"],["tube","🧪","пробірка"]],
+    [["dog","🐶","собака"],["dig","⛏️","копати"]],
+    [["cat","🐱","кіт"],["cut","✂️","різати"]],
+    [["mop","🧹","швабра"],["map","🗺️","карта"]],
+    [["bed","🛏️","ліжко"],["bud","🌱","паросток"]],
+    [["net","🥅","сітка"],["nut","🥜","горіх"]],
+    [["ten","🔟","десять"],["tin","🥫","бляшанка"]],
+    [["rod","🎣","вудка"],["red","🔴","червоний"]],
+    [["bat","🦇","кажан"],["bag","👜","сумка"],["bus","🚌","автобус"]],
+    [["rose","🌹","троянда"],["nose","👃","ніс"],["rope","🪢","мотузка"]],
+    [["mice","🐭","миші"],["rice","🍚","рис"],["dice","🎲","кубики"]],
+    [["cake","🎂","торт"],["snake","🐍","змія"],["lake","🏞️","озеро"]],
+    [["sun","☀️","сонце"],["six","6️⃣","шість"],["sock","🧦","шкарпетка"]],
+    [["fox","🦊","лисиця"],["box","📦","коробка"],["fish","🐟","риба"]],
+  ];
+  const ALL = [];
+  FAMILIES.flat().forEach(([w, e, ua]) => { if (!ALL.some(x => x.w === w)) ALL.push({ w, e, ua }); });
+  const ROUNDS = 15;
+
+  const $ = id => document.getElementById(id);
+  const wordEl = $("word"), cardsEl = $("cards"), explain = $("explain");
+  const bar = $("bar"), scoreEl = $("score"), nextBtn = $("next");
+  let queue, round, score, firstTry, done, target;
+
+  function optionsFor(t) {
+    const fam = FAMILIES.filter(f => f.some(x => x[0] === t.w)).flat()
+      .map(([w]) => ALL.find(x => x.w === w));
+    const similar = ALL.filter(x => x.w[0] === t.w[0] || x.w.slice(-2) === t.w.slice(-2));
+    const out = [t];
+    for (const c of [...shuffle(fam), ...shuffle(similar), ...shuffle(ALL)]) {
+      if (out.length === 4) break;
+      if (out.some(o => o.w === c.w || o.e === c.e)) continue;
+      out.push(c);
+    }
+    return shuffle(out);
+  }
+
+  function start() {
+    queue = sample(ALL, ROUNDS);
+    round = 0; score = 0;
+    scoreEl.textContent = 0;
+    bar.style.width = "0%";
+    newRound();
+  }
+
+  function newRound() {
+    target = queue[round];
+    firstTry = true; done = false;
+    wordEl.textContent = target.w;
+    explain.innerHTML = "";
+    nextBtn.classList.remove("show");
+    cardsEl.innerHTML = "";
+    optionsFor(target).forEach(o => {
+      const b = document.createElement("button");
+      b.className = "card";
+      b.innerHTML = `<span class="e">${o.e}</span><span class="l"></span><span class="t"></span>`;
+      b.addEventListener("click", () => choose(b, o));
+      b._o = o;
+      cardsEl.appendChild(b);
+    });
+  }
+
+  function choose(card, o) {
+    if (done) return;
+    // Every tap says the word of that picture: the child hears what he picked
+    speak(o.w);
+    card.querySelector(".l").textContent = o.w;
+    card.querySelector(".t").textContent = o.ua;
+    if (o !== target) {
+      firstTry = false;
+      card.classList.add("wrong");
+      card.disabled = true;
+      flash(card, "shake");
+      return;
+    }
+    done = true;
+    if (firstTry) { score++; scoreEl.textContent = score; }
+    round++;
+    bar.style.width = (round / ROUNDS * 100) + "%";
+    card.classList.add("right");
+    flash(card, "pop");
+    cardsEl.querySelectorAll(".card").forEach(c => {
+      c.disabled = true;
+      c.querySelector(".l").textContent = c._o.w;   // compare: cap / cup / cape
+      c.querySelector(".t").textContent = c._o.ua;
+    });
+    wordEl.innerHTML = vowelHTML(target.w);
+    explain.innerHTML = `<div class="tr"><span class="en">${target.w}</span> — <span class="ua">${target.ua}</span></div>${vowelRule(target.w)}`;
+    nextBtn.lastChild.textContent = round >= ROUNDS ? "Finish" : "Next";
+    nextBtn.classList.add("show");
+  }
+
+  // Hint: colour the vowel and tell how it sounds — but don't read the word aloud
+  $("hint").addEventListener("click", () => {
+    if (done) return;
+    wordEl.innerHTML = vowelHTML(target.w);
+    explain.innerHTML = vowelRule(target.w);
+  });
+  nextBtn.addEventListener("click", () => {
+    if (round >= ROUNDS) showResult({ score, total: ROUNDS, onAgain: start });
+    else newRound();
+  });
+  $("restart").addEventListener("click", start);
+  start();
+</script>
+</body>
+</html>

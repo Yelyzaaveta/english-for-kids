@@ -87,13 +87,13 @@ if ("speechSynthesis" in window) {
   _findVoice();
   speechSynthesis.onvoiceschanged = _findVoice;
 }
-function speak(text) {
+function speak(text, rate = 0.85) {
   if (!("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = _voice ? _voice.lang : "en-GB";
   if (_voice) u.voice = _voice;
-  u.rate = 0.85;
+  u.rate = rate;
   speechSynthesis.speak(u);
 }
 
