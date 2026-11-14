@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Holidays in the USA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/worksheet.css">
+<style>
+  /* Same A4 layout as the vowel worksheets, dark-green palette */
+  :root {
+    --ink: #1c2a23;
+    --muted: #6f8279;
+    --line: #cfe0d6;
+    --p: #1f6b45;        /* dark green */
+    --p-dark: #134a2f;
+    --p-soft: #e9f3ed;
+    --p-mid: #9fc8b1;
+    --desk: #e3ebe6;
+  }
+  .page { padding: 12mm 14mm 10mm; }
+
+  .title { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+  .title h1 { font-size: 27px; color: var(--p-dark); }
+  .title .date {
+    padding: 3px 10px; border-radius: 20px;
+    background: var(--p); color: #fff; font-size: 12.5px; font-weight: 600;
+  }
+  .title .ua { font-size: 13px; color: var(--muted); margin-left: auto; }
+
+  .intro { display: grid; grid-template-columns: 68mm 1fr; gap: 12px; margin-bottom: 11px; }
+  .intro img {
+    width: 100%; height: 56mm; object-fit: cover;
+    border-radius: 12px; display: block;
+  }
+  .text { margin: 0; font-size: 14px; line-height: 1.6; }
+  .text b { color: var(--p-dark); background: var(--p-soft); padding: 0 3px; border-radius: 4px; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .ex { margin-bottom: 14px; }
+  .ex-title { font-size: 14px; margin-bottom: 6px; }
+  .ex-title .n { background: var(--p); }
+
+  /* Match: numbered words + lettered translations + answer boxes */
+  .m { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 10px; font-size: 13px; }
+  .m span { padding: 2px 0; border-bottom: 1px dashed var(--line); }
+  .m .k { color: var(--p); font-weight: 700; margin-right: 4px; }
+  .ans { display: flex; gap: 8px; margin-top: 6px; font-size: 12px; color: var(--muted); }
+  .ans i {
+    display: inline-block; width: 18px; height: 18px; vertical-align: middle;
+    border: 1.5px solid var(--p-mid); border-radius: 4px; margin-left: 2px;
+  }
+
+  /* Word bank + gap sentences */
+  .bank { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+  .bank span {
+    padding: 2px 9px; border-radius: 12px; font-size: 12.5px; font-weight: 500;
+    background: var(--p-soft); color: var(--p-dark);
+  }
+  .gaps { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.85; }
+  .gaps u { display: inline-block; width: 26mm; border-bottom: 1px solid var(--ink); text-decoration: none; }
+  .gaps u.s { width: 16mm; }
+
+  /* True / False rows */
+  .tf { display: grid; gap: 4px; }
+  .tf div {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 10px; border: 1.5px solid var(--line); border-radius: 9px; font-size: 13px;
+  }
+  .tf .k { color: var(--p); font-weight: 700; }
+  .tf .tfb { margin-left: auto; display: flex; gap: 6px; }
+  .tf .tfb span {
+    width: 22px; height: 22px; display: grid; place-items: center;
+    border: 1.5px solid var(--p-mid); border-radius: 50%;
+    font-size: 11px; font-weight: 700; color: var(--p-dark);
+  }
+
+  /* a / b / c choice */
+  .abc { display: grid; gap: 4px; font-size: 13px; }
+  .abc div { padding: 6px 10px; border: 1.5px solid var(--line); border-radius: 9px; display: flex; gap: 14px; }
+  .abc .q { flex: 1; }
+  .abc .o { color: var(--muted); }
+  .abc .o b { color: var(--p); }
+
+  /* Questions with answer lines */
+  .qa { margin: 0; padding-left: 18px; font-size: 13px; }
+  .qa li { margin-bottom: 4px; }
+  .qa .line { display: block; height: 30px; border-bottom: 1px solid var(--line); margin-top: 2px; }
+  .qa .own { color: var(--muted); font-size: 11.5px; }
+
+  /* Small grids for variety */
+  .wl { display: grid; gap: 4px; font-size: 13px; }
+  .wl div { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border: 1.5px solid var(--line); border-radius: 9px; }
+  .wl .bx { margin-left: auto; width: 24px; height: 22px; border: 1.5px solid var(--p-mid); border-radius: 5px; }
+  .odd { display: grid; gap: 5px; font-size: 13.5px; }
+  .odd div { display: flex; justify-content: space-around; padding: 5px 8px; border: 1.5px solid var(--line); border-radius: 9px; }
+  .menu { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; font-size: 13px; }
+  .menu span { display: flex; align-items: center; gap: 7px; padding: 3px 0; }
+  .menu i { width: 15px; height: 15px; border: 1.5px solid var(--p-mid); border-radius: 4px; flex: none; }
+
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a href="../index.html">← На головну</a>
+  <button onclick="window.print()">Друкувати / зберегти PDF</button>
+  <span class="hint">У вікні друку: A4, поля «Немає», увімкнути «Фонова графіка»</span>
+</div>
+
+<!-- ================= 1. NEW YEAR ================= -->
+<section class="page">
+  <div class="head"><b>Holidays in the USA · Свята в США</b><span class="name">Name: <span></span></span></div>
+  <div class="title"><h1>New Year's Day</h1><span class="date">January 1</span><span class="ua">Новий рік</span></div>
+  <div class="intro">
+    <img src="../assets/holidays/new-year.jpg" alt="Fireworks over a city at night">
+    <p class="text">New Year's Day is on January 1st. The party starts the night before, on <b>New Year's Eve</b>. Families and friends meet, eat tasty food and wait for <b>midnight</b>. In New York, about a million people watch a big shining ball drop in Times Square. When the clock strikes twelve, everyone <b>shouts</b> "Happy New Year!" and there are <b>fireworks</b> in the sky. Many people make New Year's <b>resolutions</b> — promises to do something better, like reading more or eating less candy.</p>
+  </div>
+
+  <div class="two">
+    <div class="ex">
+      <div class="ex-title"><span class="n">1</span> Match the words <small>з'єднай</small></div>
+      <div class="m">
+        <span><span class="k">1</span>midnight</span><span><span class="k">a</span>кричати</span>
+        <span><span class="k">2</span>fireworks</span><span><span class="k">b</span>обіцянка</span>
+        <span><span class="k">3</span>Eve</span><span><span class="k">c</span>північ</span>
+        <span><span class="k">4</span>shout</span><span><span class="k">d</span>феєрверк</span>
+        <span><span class="k">5</span>promise</span><span><span class="k">e</span>переддень свята</span>
+      </div>
+      <div class="ans">1<i></i> 2<i></i> 3<i></i> 4<i></i> 5<i></i></div>
+    </div>
+    <div class="ex">
+      <div class="ex-title"><span class="n">2</span> Fill in the gaps</div>
+      <div class="bank"><span>midnight</span><span>fireworks</span><span>resolution</span><span>Eve</span></div>
+      <ol class="gaps">
+        <li>December 31st is New Year's <u></u>.</li>
+        <li>The clock strikes twelve at <u></u>.</li>
+        <li>My <u></u> is to read more books.</li>
+        <li>We watch colourful <u></u> in the sky.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">3</span> True or False? <small>обведи T або F</small></div>
+    <div class="tf">
+      <div><span class="k">1</span>New Year's Day is on December 31st.<span class="tfb"><span>T</span><span>F</span></span></div>
+      <div><span class="k">2</span>In New York, a big ball drops in Times Square.<span class="tfb"><span>T</span><span>F</span></span></div>
+      <div><span class="k">3</span>At midnight people shout "Merry Christmas!"<span class="tfb"><span>T</span><span>F</span></span></div>
+      <div><span class="k">4</span>A resolution is a promise to do something better.<span class="tfb"><span>T</span><span>F</span></span></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">4</span> Answer the questions</div>
+    <ol class="qa">
+      <li>When does the party start?<span class="line"></span></li>
+      <li>How many people watch the ball drop in Times Square?<span class="line"></span></li>
+      <li>What is <i>your</i> New Year's resolution? <span class="own">(your own answer)</span><span class="line"></span></li>
+    </ol>
+  </div>
+
+  <div class="foot"><span>New Year's Day</span><span class="num">1</span></div>
+</section>
+
+<!-- ================= 2. PRESIDENTS' DAY ================= -->
+<section class="page">
+  <div class="head"><b>Holidays in the USA · Свята в США</b><span class="name">Name: <span></span></span></div>
+  <div class="title"><h1>Presidents' Day</h1><span class="date">3rd Monday in February</span><span class="ua">День президентів</span></div>
+  <div class="intro">
+    <img src="../assets/holidays/presidents-day.jpg" alt="George Washington and Abraham Lincoln with the US flag">
+    <p class="text">Presidents' Day is on the third Monday in February. On this day Americans <b>remember</b> their <b>presidents</b>, especially two great ones. George Washington was the first president of the USA. His <b>birthday</b> is on February 22nd. Abraham Lincoln was the 16th president. He helped to end slavery in America. You can see both men on American money: Washington is on the one-dollar <b>bill</b> and Lincoln is on the five-dollar bill. Many children don't go to school on this day, and shops have big <b>sales</b>.</p>
+  </div>
+
+  <div class="two">
+    <div class="ex">
+      <div class="ex-title"><span class="n">1</span> Match the words <small>з'єднай</small></div>
+      <div class="m">
+        <span><span class="k">1</span>remember</span><span><span class="k">a</span>банкнота</span>
+        <span><span class="k">2</span>president</span><span><span class="k">b</span>розпродаж</span>
+        <span><span class="k">3</span>bill</span><span><span class="k">c</span>вшановувати, пам'ятати</span>
+        <span><span class="k">4</span>sale</span><span><span class="k">d</span>день народження</span>
+        <span><span class="k">5</span>birthday</span><span><span class="k">e</span>президент</span>
+      </div>
+      <div class="ans">1<i></i> 2<i></i> 3<i></i> 4<i></i> 5<i></i></div>
+    </div>
+    <div class="ex">
+      <div class="ex-title"><span class="n">2</span> Who is it? <small>W — Washington, L — Lincoln</small></div>
+      <div class="wl">
+        <div>He was the first president.<span class="bx"></span></div>
+        <div>He was the 16th president.<span class="bx"></span></div>
+        <div>He is on the five-dollar bill.<span class="bx"></span></div>
+        <div>His birthday is on February 22nd.<span class="bx"></span></div>
+        <div>He helped to end slavery.<span class="bx"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">3</span> Choose the right answer <small>обведи a, b або c</small></div>
+    <div class="abc">
+      <div><span class="q">1. Presidents' Day is in …</span><span class="o"><b>a</b> January</span><span class="o"><b>b</b> February</span><span class="o"><b>c</b> July</span></div>
+      <div><span class="q">2. It is always on a …</span><span class="o"><b>a</b> Monday</span><span class="o"><b>b</b> Friday</span><span class="o"><b>c</b> Sunday</span></div>
+      <div><span class="q">3. Washington is on the … bill.</span><span class="o"><b>a</b> one-dollar</span><span class="o"><b>b</b> five-dollar</span><span class="o"><b>c</b> ten-dollar</span></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">4</span> Answer the questions</div>
+    <ol class="qa">
+      <li>Who was the first president of the USA?<span class="line"></span></li>
+      <li>What do shops have on Presidents' Day?<span class="line"></span></li>
+      <li>Who is the president of Ukraine? <span class="own">(your own answer)</span><span class="line"></span></li>
+    </ol>
+  </div>
+
+  <div class="foot"><span>Presidents' Day</span><span class="num">2</span></div>
+</section>
+
+<!-- ================= 3. ST. PATRICK'S DAY ================= -->
+<section class="page">
+  <div class="head"><b>Holidays in the USA · Свята в США</b><span class="name">Name: <span></span></span></div>
+  <div class="title"><h1>St. Patrick's Day</h1><span class="date">March 17</span><span class="ua">День святого Патрика</span></div>
+  <div class="intro">
+    <img src="../assets/holidays/st-patricks-day.jpg" alt="People in green hats at a St. Patrick's Day party">
+    <p class="text">St. Patrick's Day is on March 17th. It is an <b>Irish</b> holiday, but Americans love it too. Saint Patrick lived in Ireland a long time ago. On this day people <b>wear</b> green clothes and green hats. If you don't wear green, someone can <b>pinch</b> you! The symbol of the holiday is the <b>shamrock</b>, a small plant with three <b>leaves</b>. Big cities have <b>parades</b> with music and dancing. In Chicago, people even make the river green!</p>
+  </div>
+
+  <div class="two">
+    <div class="ex">
+      <div class="ex-title"><span class="n">1</span> Match the words <small>з'єднай</small></div>
+      <div class="m">
+        <span><span class="k">1</span>wear</span><span><span class="k">a</span>парад</span>
+        <span><span class="k">2</span>shamrock</span><span><span class="k">b</span>листок</span>
+        <span><span class="k">3</span>parade</span><span><span class="k">c</span>щипати</span>
+        <span><span class="k">4</span>leaf</span><span><span class="k">d</span>носити (одяг)</span>
+        <span><span class="k">5</span>pinch</span><span><span class="k">e</span>трилисник</span>
+      </div>
+      <div class="ans">1<i></i> 2<i></i> 3<i></i> 4<i></i> 5<i></i></div>
+    </div>
+    <div class="ex">
+      <div class="ex-title"><span class="n">2</span> Odd one out <small>обведи зайве</small></div>
+      <div class="odd">
+        <div><span>green</span><span>hat</span><span>shamrock</span><span>turkey</span></div>
+        <div><span>parade</span><span>music</span><span>chimney</span><span>dancing</span></div>
+        <div><span>Ireland</span><span>Italy</span><span>Irish</span><span>Patrick</span></div>
+        <div><span>March</span><span>leaf</span><span>plant</span><span>shamrock</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">3</span> True or False? <small>обведи T або F</small></div>
+    <div class="tf">
+      <div><span class="k">1</span>St. Patrick's Day is on March 17th.<span class="tfb"><span>T</span><span>F</span></span></div>
+      <div><span class="k">2</span>It is a Mexican holiday.<span class="tfb"><span>T</span><span>F</span></span></div>
+      <div><span class="k">3</span>A shamrock has four leaves.<span class="tfb"><span>T</span><span>F</span></span></div>
+      <div><span class="k">4</span>In Chicago, people make the river green.<span class="tfb"><span>T</span><span>F</span></span></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">4</span> Answer the questions</div>
+    <ol class="qa">
+      <li>What colour do people wear on St. Patrick's Day?<span class="line"></span></li>
+      <li>What can happen if you don't wear green?<span class="line"></span></li>
+      <li>What is the symbol of the holiday?<span class="line"></span></li>
+    </ol>
+  </div>
+
+  <div class="foot"><span>St. Patrick's Day</span><span class="num">3</span></div>
+</section>
+
+<!-- ================= 4. COLUMBUS DAY ================= -->
+<section class="page">
+  <div class="head"><b>Holidays in the USA · Свята в США</b><span class="name">Name: <span></span></span></div>
+  <div class="title"><h1>Columbus Day</h1><span class="date">2nd Monday in October</span><span class="ua">День Колумба</span></div>
+  <div class="intro">
+    <img src="../assets/holidays/columbus-day.jpg" alt="Columbus and his sailors land on an island">
+    <p class="text">Columbus Day is on the second Monday in October. On this day people remember Christopher Columbus, a <b>sailor</b> from Italy. In 1492 he <b>sailed</b> across the Atlantic <b>Ocean</b> with three <b>ships</b>: the Niña, the Pinta and the Santa María. He wanted to find a new way to India, but he found the <b>islands</b> of America. Today some people call this day Indigenous Peoples' Day. They remember the <b>Native Americans</b> who lived in America long before Columbus came.</p>
+  </div>
+
+  <div class="two">
+    <div class="ex">
+      <div class="ex-title"><span class="n">1</span> Match the words <small>з'єднай</small></div>
+      <div class="m">
+        <span><span class="k">1</span>sailor</span><span><span class="k">a</span>острів</span>
+        <span><span class="k">2</span>ship</span><span><span class="k">b</span>знайти</span>
+        <span><span class="k">3</span>island</span><span><span class="k">c</span>корабель</span>
+        <span><span class="k">4</span>ocean</span><span><span class="k">d</span>моряк</span>
+        <span><span class="k">5</span>find</span><span><span class="k">e</span>океан</span>
+      </div>
+      <div class="ans">1<i></i> 2<i></i> 3<i></i> 4<i></i> 5<i></i></div>
+    </div>
+    <div class="ex">
+      <div class="ex-title"><span class="n">2</span> Numbers from the text</div>
+      <ol class="gaps">
+        <li>Columbus sailed in <u class="s"></u>.</li>
+        <li>He had <u class="s"></u> ships.</li>
+        <li>Columbus Day is on the <u class="s"></u> Monday in October.</li>
+        <li>The first ship was called the <u></u>.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">3</span> Put the sentences in order <small>пронумеруй 1–4</small></div>
+    <div class="wl">
+      <div>He found the islands of America.<span class="bx"></span></div>
+      <div>Columbus wanted to find a new way to India.<span class="bx"></span></div>
+      <div>Today we remember him on Columbus Day.<span class="bx"></span></div>
+      <div>He sailed across the Atlantic Ocean with three ships.<span class="bx"></span></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">4</span> Answer the questions</div>
+    <ol class="qa">
+      <li>Where was Columbus from?<span class="line"></span></li>
+      <li>Where did he want to go?<span class="line"></span></li>
+      <li>Who lived in America before Columbus came?<span class="line"></span></li>
+    </ol>
+  </div>
+
+  <div class="foot"><span>Columbus Day</span><span class="num">4</span></div>
+</section>
+
+<!-- ================= 5. THANKSGIVING ================= -->
+<section class="page">
+  <div class="head"><b>Holidays in the USA · Свята в США</b><span class="name">Name: <span></span></span></div>
+  <div class="title"><h1>Thanksgiving</h1><span class="date">4th Thursday in November</span><span class="ua">День подяки</span></div>
+  <div class="intro">
+    <img src="../assets/holidays/thanksgiving.jpg" alt="A family at the table with a big roast turkey">
+    <p class="text">Thanksgiving is on the fourth Thursday in November. It is a big family holiday. People say "thank you" for the good things in their life: their family, friends, food and home. The first Thanksgiving was in 1621, when the <b>Pilgrims</b> and Native Americans <b>shared</b> a big dinner. Today families cook a big <b>turkey</b> with potatoes, <b>corn</b> and cranberry sauce. For <b>dessert</b>, they eat <b>pumpkin</b> pie. Many people also watch a big parade on TV and play or watch American football.</p>
+  </div>
+
+  <div class="two">
+    <div class="ex">
+      <div class="ex-title"><span class="n">1</span> Match the words <small>з'єднай</small></div>
+      <div class="m">
+        <span><span class="k">1</span>turkey</span><span><span class="k">a</span>ділитися</span>
+        <span><span class="k">2</span>share</span><span><span class="k">b</span>кукурудза</span>
+        <span><span class="k">3</span>pumpkin</span><span><span class="k">c</span>індичка</span>
+        <span><span class="k">4</span>corn</span><span><span class="k">d</span>десерт</span>
+        <span><span class="k">5</span>dessert</span><span><span class="k">e</span>гарбуз</span>
+      </div>
+      <div class="ans">1<i></i> 2<i></i> 3<i></i> 4<i></i> 5<i></i></div>
+    </div>
+    <div class="ex">
+      <div class="ex-title"><span class="n">2</span> Thanksgiving dinner <small>познач їжу з тексту</small></div>
+      <div class="menu">
+        <span><i></i>turkey</span><span><i></i>pizza</span>
+        <span><i></i>potatoes</span><span><i></i>cookies</span>
+        <span><i></i>ice cream</span><span><i></i>corn</span>
+        <span><i></i>cranberry sauce</span><span><i></i>pumpkin pie</span>
+        <span><i></i>sushi</span><span><i></i>hot dogs</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">3</span> Choose the right answer <small>обведи a, b або c</small></div>
+    <div class="abc">
+      <div><span class="q">1. Thanksgiving is in …</span><span class="o"><b>a</b> October</span><span class="o"><b>b</b> November</span><span class="o"><b>c</b> December</span></div>
+      <div><span class="q">2. The first Thanksgiving was in …</span><span class="o"><b>a</b> 1492</span><span class="o"><b>b</b> 1621</span><span class="o"><b>c</b> 1776</span></div>
+      <div><span class="q">3. On TV people watch …</span><span class="o"><b>a</b> a parade</span><span class="o"><b>b</b> fireworks</span><span class="o"><b>c</b> a ball drop</span></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">4</span> Answer the questions</div>
+    <ol class="qa">
+      <li>Who shared the first Thanksgiving dinner?<span class="line"></span></li>
+      <li>What do people eat for dessert?<span class="line"></span></li>
+      <li>Finish the sentence: <i>I am thankful for …</i> <span class="own">(your own answer)</span><span class="line"></span></li>
+    </ol>
+  </div>
+
+  <div class="foot"><span>Thanksgiving</span><span class="num">5</span></div>
+</section>
+
+<!-- ================= 6. CHRISTMAS ================= -->
+<section class="page">
+  <div class="head"><b>Holidays in the USA · Свята в США</b><span class="name">Name: <span></span></span></div>
+  <div class="title"><h1>Christmas</h1><span class="date">December 25</span><span class="ua">Різдво</span></div>
+  <div class="intro">
+    <img src="../assets/holidays/christmas.jpg" alt="A Christmas tree and stockings by the fireplace">
+    <p class="text">Christmas is on December 25th. It is the most popular holiday in the USA. Weeks before Christmas, families <b>decorate</b> a Christmas tree with lights and toys. Children write letters to Santa Claus. On Christmas Eve they hang <b>stockings</b> by the <b>fireplace</b> and leave milk and cookies for Santa. Children believe he comes down the <b>chimney</b> at night. In the morning they find <b>presents</b> under the tree. Families eat a big dinner together and sing Christmas songs called <b>carols</b>.</p>
+  </div>
+
+  <div class="two">
+    <div class="ex">
+      <div class="ex-title"><span class="n">1</span> Find the word in the text</div>
+      <ol class="gaps">
+        <li>a big sock for presents: <b>s</b><u class="s"></u></li>
+        <li>Christmas songs: <b>c</b><u class="s"></u></li>
+        <li>Santa comes down it: <b>c</b><u class="s"></u></li>
+        <li>gifts: <b>p</b><u class="s"></u></li>
+        <li>to make something beautiful: <b>d</b><u class="s"></u></li>
+      </ol>
+    </div>
+    <div class="ex">
+      <div class="ex-title"><span class="n">2</span> Fill in the gaps</div>
+      <div class="bank"><span>tree</span><span>cookies</span><span>letters</span><span>Eve</span></div>
+      <ol class="gaps">
+        <li>Children write <u></u> to Santa.</li>
+        <li>On Christmas <u></u> they hang stockings.</li>
+        <li>They leave milk and <u></u> for Santa.</li>
+        <li>Presents are under the <u></u>.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">3</span> True or False? <small>обведи T або F</small></div>
+    <div class="tf">
+      <div><span class="k">1</span>Christmas is the most popular holiday in the USA.<span class="tfb"><span>T</span><span>F</span></span></div>
+      <div><span class="k">2</span>Families decorate the tree with lights and toys.<span class="tfb"><span>T</span><span>F</span></span></div>
+      <div><span class="k">3</span>Santa Claus comes in through the door.<span class="tfb"><span>T</span><span>F</span></span></div>
+      <div><span class="k">4</span>Children find their presents in the evening.<span class="tfb"><span>T</span><span>F</span></span></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">4</span> Answer the questions</div>
+    <ol class="qa">
+      <li>What do children leave for Santa?<span class="line"></span></li>
+      <li>Where do children find their presents?<span class="line"></span></li>
+      <li>How does your family celebrate Christmas? <span class="own">(your own answer)</span><span class="line"></span></li>
+    </ol>
+  </div>
+
+  <div class="foot"><span>Christmas</span><span class="num">6</span></div>
+</section>
+
+</body>
+</html>

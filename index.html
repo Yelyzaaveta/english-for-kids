@@ -71,6 +71,13 @@
     transition: transform .15s, border-color .15s;
   }
   .task:hover { transform: translateY(-3px); border-color: var(--c, var(--green)); }
+  .qa-link {
+    display: block; width: 18px; margin: 60px auto 0;
+    text-align: center; font-size: 11px; line-height: 18px;
+    color: var(--muted); opacity: .18; text-decoration: none;
+    border: 1px solid currentColor; border-radius: 50%;
+  }
+  .qa-link:hover { opacity: .6; }
   .task .ico {
     width: 46px; height: 46px; flex: none;
     display: grid; place-items: center;
@@ -95,9 +102,16 @@
   <h2>Голосні літери · Vowels</h2>
   <div class="grid">
     <a class="task" href="vowels/vowel-sounds.html" style="--c: var(--purple)"><span class="ico">Aa</span> Голосні звуки</a>
+    <a class="task" href="vowels/vowel-review.html" style="--c: var(--purple)"><span class="ico">✓</span> Голосні: Review</a>
     <a class="task" href="vowels/hear-and-choose.html" style="--c: var(--purple)"><span class="ico">👂</span> Hear &amp; Choose</a>
     <a class="task" href="vowels/lost-letter.html" style="--c: var(--purple)"><span class="ico">c_t</span> Lost Letter</a>
     <a class="task" href="vowels/read-and-find.html" style="--c: var(--purple)"><span class="ico">📖</span> Read &amp; Find</a>
+  </div>
+
+  <h2>Holidays in the USA · Свята в США</h2>
+  <div class="grid">
+    <a class="task" href="holidays/usa-holidays.html" style="--c: var(--green)"><span class="ico">🇺🇸</span> Свята в США</a>
+    <a class="task" href="holidays/holiday-detective.html" style="--c: var(--green)"><span class="ico">🔎</span> Holiday Detective</a>
   </div>
 
   <h2>Words</h2>
@@ -112,6 +126,7 @@
     <a class="task" href="games/odd-one-out.html" style="--c: var(--green)"><span class="ico">🧩</span> Odd One Out</a>
     <a class="task" href="games/amazz.html" style="--c: var(--yellow)"><span class="ico">🚚</span> Amazz</a>
   </div>
+  <a class="qa-link" href="answers.html" aria-label="Відповіді">?</a>
 </div>
 </body>
 </html>
