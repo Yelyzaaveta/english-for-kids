@@ -15,6 +15,7 @@ assets/
   holidays/             — фото до свят (стиснуті jpg)
   common.js             — словник за темами, озвучка, вікно результату
   reading.css / .js     — спільне для ігор на читання: підсвічування голосної, правило складу
+  house.css / .js       — спільне для блоку house/: кімнати, малюнки меблів, план будинку
 beginners/
   alphabet.html         — алфавіт із закритими картками
   alphabet-type.html    — алфавіт, де пропущені букви треба вписати з клавіатури
@@ -27,6 +28,12 @@ vowels/                 — блок «Голосні літери»
 holidays/                — блок «Свята в США» (5 клас)
   usa-holidays.html     — 6 свят: фото, текст, 4 вправи на кожне (6 аркушів А4)
   holiday-detective.html — прочитай підказку й вгадай свято
+house/                   — блок «Where is …?» — кімнати, in / on / under, on the left / right (3 клас)
+  house-words.html      — картинка → слово: кімнати, меблі, ball, dog, house
+  in-on-under.html      — де м'яч/кіт/собака: "Where is the ball?" + "Is it on the chair? Yes, it is / No, it isn't"
+  find-tobby.html       — прочитай речення (Tobby is under the table in the kitchen) і знайди картинку
+  left-right.html       — план будинку з підписами: "Where is the kitchen?" → "It's on the left, at the top."
+  find-the-room.html    — план без підписів: прочитай, де кімната, і натисни на неї
 words/
   picture-match.html    — з'єднай картинку зі словом
   colours.html          — знайди колір

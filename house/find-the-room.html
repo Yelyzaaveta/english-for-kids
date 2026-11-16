@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Find the Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .qline { margin: clamp(6px, 1.6vh, 14px) 0; }
+  .house-no { color: var(--muted); font-weight: 700; font-size: clamp(13px, 2vh, 16px); letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Find the <span class="accent">Room</span></h1>
+  <div class="score" id="score">0</div>
+</header>
+
+<main>
+  <div class="progress"><div id="bar"></div></div>
+  <div class="house-no" id="houseNo"></div>
+  <div class="qline">
+    <span class="txt" id="q"></span>
+    <button class="snd" id="say" aria-label="Listen" data-icon="sound"></button>
+    <button class="snd" id="hint" aria-label="Підказка" title="Підказка">💡</button>
+  </div>
+  <div id="plan"></div>
+  <div class="lr"><span>⬅ left</span><span>right ➡</span></div>
+  <div class="explain" id="explain">Read and tap the room. Прочитай і натисни на кімнату.</div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+  <button class="btn green" id="next" data-icon="next">Next</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+  const HOUSES = 3, PER_HOUSE = 4, ROUNDS = HOUSES * PER_HOUSE;
+
+  const $ = id => document.getElementById(id);
+  const planEl = $("plan"), explain = $("explain"), bar = $("bar"), scoreEl = $("score"), nextBtn = $("next");
+  let round, score, firstTry, done, house, order, cell, q;
+
+  function start() {
+    round = 0; score = 0;
+    scoreEl.textContent = 0;
+    bar.style.width = "0%";
+    newHouse();
+  }
+
+  function newHouse() {
+    house = randomHouse();
+    order = sample(house, PER_HOUSE);
+    renderPlan(planEl, house, { showNames: false });
+    planEl.querySelectorAll(".room").forEach(b =>
+      b.addEventListener("click", () => choose(b, house[+b.dataset.i])));
+    $("houseNo").textContent = `House ${Math.floor(round / PER_HOUSE) + 1} of ${HOUSES}`;
+    newRound();
+  }
+
+  function newRound() {
+    cell = order[round % PER_HOUSE];
+    firstTry = true; done = false;
+    nextBtn.classList.remove("show");
+    planEl.querySelectorAll(".room.wrong").forEach(b => b.classList.remove("wrong"));
+    q = `The ${cell.room.en} is ${wherePhrase(cell)}.`;
+    $("q").innerHTML = `The <b>${cell.room.en}</b> is ${SIDES[cell.side][0]}, ${ROWS[cell.row][0]}.`;
+    if (round % PER_HOUSE) explain.innerHTML = "&nbsp;";
+  }
+
+  function choose(btn, c) {
+    if (done || btn.classList.contains("done")) return;
+    if (c !== cell) {
+      firstTry = false;
+      btn.classList.add("wrong");
+      flash(btn, "shake");
+      explain.innerHTML = `No — this room is <b>${wherePhrase(c)}</b>. <span class="ua">(${wherePhraseUa(c)})</span>`;
+      return;
+    }
+    done = true;
+    if (firstTry) { score++; scoreEl.textContent = score; }
+    round++;
+    bar.style.width = (round / ROUNDS * 100) + "%";
+    btn.classList.remove("wrong");
+    btn.classList.add("right", "done");
+    revealRoom(btn, c);
+    flash(btn, "pop");
+    explain.innerHTML = `Yes! 🎉 <b>${q}</b><br><span class="ua">${cap(c.room.ua)} — ${wherePhraseUa(c)}.</span>`;
+    speak(q);
+    const houseDone = round % PER_HOUSE === 0;
+    if (houseDone) {
+      // show the rest of the house
+      house.forEach((h, i) => {
+        const b = planEl.querySelector(`[data-i="${i}"]`);
+        if (!b.classList.contains("done")) { revealRoom(b, h); b.classList.add("done"); }
+      });
+    }
+    nextBtn.lastChild.textContent = round >= ROUNDS ? "Finish" : houseDone ? "New house" : "Next";
+    nextBtn.classList.add("show");
+  }
+  const cap = s => s[0].toUpperCase() + s.slice(1);
+
+  nextBtn.addEventListener("click", () => {
+    planEl.querySelectorAll(".room.right").forEach(b => b.classList.remove("right"));
+    if (round >= ROUNDS) showResult({ score, total: ROUNDS, onAgain: start });
+    else if (round % PER_HOUSE === 0) newHouse();
+    else newRound();
+  });
+  $("hint").addEventListener("click", () => {
+    if (done) return;
+    firstTry = false;
+    explain.innerHTML = `💡 <span class="ua">${cap(cell.room.ua)} — ${wherePhraseUa(cell)}</span>`;
+  });
+  $("say").addEventListener("click", () => q && speak(q));
+  $("restart").addEventListener("click", start);
+  start();
+</script>
+</body>
+</html>

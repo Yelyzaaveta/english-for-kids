@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Left or Right</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .plan .room { cursor: default; }
+  .plan .room:hover { background: #e9d8bf14; }
+  .plan .room.target:hover { background: #ffc93c33; }
+  .qline { margin: clamp(6px, 1.5vh, 12px) 0; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Left or <span class="accent">Right?</span></h1>
+  <div class="score" id="score">0</div>
+</header>
+
+<main>
+  <div class="progress"><div id="bar"></div></div>
+  <p class="task">Look at the plan. Подивись на план будинку</p>
+  <div id="plan"></div>
+  <div class="lr"><span>⬅ on the left</span><span>on the right ➡</span></div>
+  <div class="qline">
+    <span class="txt" id="q"></span>
+    <button class="snd" id="say" aria-label="Listen" data-icon="sound"></button>
+  </div>
+  <div class="answers" id="answers"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+  <button class="btn green" id="next" data-icon="next">Next</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+  const ROUNDS = 12;
+  const EASY = 4; // first rounds: only "on the left / on the right"
+
+  const $ = id => document.getElementById(id);
+  const planEl = $("plan"), answers = $("answers"), explain = $("explain"), bar = $("bar"), scoreEl = $("score"), nextBtn = $("next");
+  let round, score, firstTry, done, house, cell, answer, q;
+
+  function start() {
+    round = 0; score = 0;
+    scoreEl.textContent = 0;
+    bar.style.width = "0%";
+    newRound();
+  }
+
+  const full = c => `It's ${wherePhrase(c)}.`;
+  const short = c => `It's ${SIDES[c.side][0]}.`;
+
+  function newRound() {
+    house = randomHouse();
+    const i = Math.floor(Math.random() * house.length);
+    cell = house[i];
+    firstTry = true; done = false;
+    explain.innerHTML = "";
+    nextBtn.classList.remove("show");
+    renderPlan(planEl, house);
+    q = `Where is the ${cell.room.en}?`;
+    $("q").textContent = q;
+
+    let opts;
+    if (round < EASY) {
+      answer = short(cell);
+      opts = ["It's on the left.", "It's on the right."];
+      answers.className = "answers two";
+    } else {
+      answer = full(cell);
+      // other rooms of the house give the wrong answers: same side, same row, and one more
+      const others = house.filter(c => c !== cell);
+      const sameSide = others.filter(c => c.side === cell.side);
+      const sameRow = others.filter(c => c.row === cell.row);
+      const wrong = [pick(sameSide), ...sameRow];
+      const rest = shuffle(others).filter(c => !wrong.includes(c));
+      opts = shuffle([cell, ...wrong, rest[0]].slice(0, 4).map(full));
+      answers.className = "answers grid2";
+    }
+    answers.innerHTML = "";
+    opts.forEach(o => {
+      const b = document.createElement("button");
+      b.className = "ans";
+      b.textContent = o;
+      b.addEventListener("click", () => choose(b, o));
+      answers.appendChild(b);
+    });
+  }
+
+  function choose(btn, o) {
+    if (done) return;
+    if (o !== answer) {
+      firstTry = false;
+      btn.classList.add("wrong");
+      btn.disabled = true;
+      flash(btn, "shake");
+      explain.innerHTML = `Find the <b>${cell.room.en}</b> (<span class="ua">${cell.room.ua}</span>) on the plan.`;
+      return;
+    }
+    done = true;
+    if (firstTry) { score++; scoreEl.textContent = score; }
+    round++;
+    bar.style.width = (round / ROUNDS * 100) + "%";
+    btn.classList.add("right");
+    flash(btn, "pop");
+    answers.querySelectorAll(".ans").forEach(b => b.disabled = true);
+    const roomBtn = planEl.querySelector(`[data-i="${house.indexOf(cell)}"]`);
+    roomBtn.classList.add("target");
+    flash(roomBtn, "pop");
+    const easy = answer === short(cell);
+    const ua = easy ? SIDES[cell.side][1] : wherePhraseUa(cell);
+    explain.innerHTML = `<b>The ${cell.room.en} is ${easy ? SIDES[cell.side][0] : wherePhrase(cell)}.</b><br>` +
+      `<span class="ua">${cap(cell.room.ua)} — ${ua}.</span>`;
+    speak(`The ${cell.room.en} is ${easy ? SIDES[cell.side][0] : wherePhrase(cell)}.`);
+    nextBtn.lastChild.textContent = round >= ROUNDS ? "Finish" : "Next";
+    nextBtn.classList.add("show");
+  }
+  const cap = s => s[0].toUpperCase() + s.slice(1);
+
+  nextBtn.addEventListener("click", () => {
+    if (round >= ROUNDS) showResult({ score, total: ROUNDS, onAgain: start });
+    else newRound();
+  });
+  $("say").addEventListener("click", () => q && speak(q));
+  $("restart").addEventListener("click", start);
+  start();
+</script>
+</body>
+</html>

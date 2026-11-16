@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>House Words</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .pic {
+    width: min(300px, 70vw, 34vh);
+    aspect-ratio: 200 / 140;
+    margin: clamp(10px, 2.4vh, 22px) 0;
+    border-radius: 18px;
+    background: linear-gradient(180deg, var(--card-top), var(--card));
+    border: 1px solid var(--card-edge);
+    display: grid; place-items: center;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 28px #00000050;
+  }
+  .pic .emo { font-size: min(90px, 20vw, 11vh); letter-spacing: 6px; line-height: 1; }
+  .pic svg { width: 100%; height: 100%; }
+  .pic .snd { position: absolute; right: 8px; bottom: 8px; width: 38px; height: 38px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>House <span class="accent">Words</span></h1>
+  <div class="score" id="score">0</div>
+</header>
+
+<main>
+  <div class="progress"><div id="bar"></div></div>
+  <p class="task">What is it? Обери слово</p>
+  <div class="pic" id="pic"></div>
+  <div class="answers two" id="answers"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+  <button class="btn green" id="next" data-icon="next">Next</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+  // Words from lessons 6–7: rooms, furniture, things from the story
+  const WORDS = [
+    { en: "kitchen",     ua: "кухня",         pic: "🍳🍽️" },
+    { en: "bedroom",     ua: "спальня",       pic: "🛏️🧸" },
+    { en: "bathroom",    ua: "ванна кімната", pic: "🛁🚿" },
+    { en: "living room", ua: "вітальня",      pic: "🛋️📺" },
+    { en: "hall",        ua: "коридор",       pic: "🚪🧥" },
+    { en: "house",       ua: "будинок",       pic: "🏡" },
+    { en: "sofa",        ua: "диван",         svg: "sofa" },
+    { en: "bed",         ua: "ліжко",         svg: "bed" },
+    { en: "table",       ua: "стіл",          svg: "table" },
+    { en: "chair",       ua: "стілець",       svg: "chair" },
+    { en: "ball",        ua: "м'яч",          pic: "⚽" },
+    { en: "dog",         ua: "собака",        pic: "🐶" },
+  ];
+  // Similar-looking / same-topic words are better distractors
+  const ROOM_WORDS = ["kitchen", "bedroom", "bathroom", "living room", "hall", "house"];
+
+  const $ = id => document.getElementById(id);
+  const pic = $("pic"), answers = $("answers"), explain = $("explain"), bar = $("bar"), scoreEl = $("score"), nextBtn = $("next");
+  let queue, round, score, firstTry, done, w;
+
+  function start() {
+    queue = shuffle(WORDS);
+    round = 0; score = 0;
+    scoreEl.textContent = 0;
+    bar.style.width = "0%";
+    newRound();
+  }
+
+  function newRound() {
+    w = queue[round];
+    firstTry = true; done = false;
+    explain.innerHTML = "";
+    nextBtn.classList.remove("show");
+    pic.innerHTML = (w.svg ? sceneSVG({ furn: w.svg }) : `<span class="emo">${w.pic}</span>`) +
+      `<button class="snd" id="say" aria-label="Listen" data-icon="sound"></button>`;
+    pic.querySelector("#say").innerHTML = ICON_SOUND;
+    pic.querySelector("#say").addEventListener("click", () => speak(w.en));
+    const sameGroup = ROOM_WORDS.includes(w.en) === true;
+    const pool = WORDS.filter(x => x !== w && ROOM_WORDS.includes(x.en) === sameGroup);
+    const opts = shuffle([w, ...sample(pool, 3)]);
+    answers.innerHTML = "";
+    opts.forEach(o => {
+      const b = document.createElement("button");
+      b.className = "ans";
+      b.textContent = o.en;
+      b.addEventListener("click", () => choose(b, o));
+      answers.appendChild(b);
+    });
+  }
+
+  function choose(btn, o) {
+    if (done) return;
+    if (o !== w) {
+      firstTry = false;
+      btn.classList.add("wrong");
+      btn.disabled = true;
+      flash(btn, "shake");
+      explain.innerHTML = `<b>${o.en}</b> — <span class="ua">${o.ua}</span>. Try again!`;
+      return;
+    }
+    done = true;
+    if (firstTry) { score++; scoreEl.textContent = score; }
+    round++;
+    bar.style.width = (round / WORDS.length * 100) + "%";
+    btn.classList.add("right");
+    flash(btn, "pop");
+    answers.querySelectorAll(".ans").forEach(b => b.disabled = true);
+    explain.innerHTML = `<b>${w.en}</b> — <span class="ua">${w.ua}</span>`;
+    speak(w.en);
+    nextBtn.lastChild.textContent = round >= WORDS.length ? "Finish" : "Next";
+    nextBtn.classList.add("show");
+  }
+
+  nextBtn.addEventListener("click", () => {
+    if (round >= WORDS.length) showResult({ score, total: WORDS.length, onAgain: start });
+    else newRound();
+  });
+  $("restart").addEventListener("click", start);
+  start();
+</script>
+</body>
+</html>
