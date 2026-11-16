@@ -69,7 +69,7 @@
     explain.innerHTML = "";
     nextBtn.classList.remove("show");
     renderPlan(planEl, house);
-    q = `Where is the ${cell.room.en}?`;
+    q = `Where is ${cell.room.the}?`;
     $("q").textContent = q;
 
     let opts;
@@ -105,7 +105,7 @@
       btn.classList.add("wrong");
       btn.disabled = true;
       flash(btn, "shake");
-      explain.innerHTML = `Find the <b>${cell.room.en}</b> (<span class="ua">${cell.room.ua}</span>) on the plan.`;
+      explain.innerHTML = `Find <b>${cell.room.the}</b> (<span class="ua">${cell.room.ua}</span>) on the plan.`;
       return;
     }
     done = true;
@@ -120,9 +120,9 @@
     flash(roomBtn, "pop");
     const easy = answer === short(cell);
     const ua = easy ? SIDES[cell.side][1] : wherePhraseUa(cell);
-    explain.innerHTML = `<b>The ${cell.room.en} is ${easy ? SIDES[cell.side][0] : wherePhrase(cell)}.</b><br>` +
+    explain.innerHTML = `<b>${Cap(cell.room.the)} is ${easy ? SIDES[cell.side][0] : wherePhrase(cell)}.</b><br>` +
       `<span class="ua">${cap(cell.room.ua)} — ${ua}.</span>`;
-    speak(`The ${cell.room.en} is ${easy ? SIDES[cell.side][0] : wherePhrase(cell)}.`);
+    speak(`${Cap(cell.room.the)} is ${easy ? SIDES[cell.side][0] : wherePhrase(cell)}.`);
     nextBtn.lastChild.textContent = round >= ROUNDS ? "Finish" : "Next";
     nextBtn.classList.add("show");
   }

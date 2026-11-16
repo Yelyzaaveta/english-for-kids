@@ -54,7 +54,7 @@
 
 /* Floor plan */
 .plan {
-  --h: min(15vh, 22vw, 120px);
+  --h: min(13.5vh, 22vw, 115px);
   display: grid;
   grid-template-columns: 1fr .62fr 1fr;
   grid-template-rows: repeat(3, var(--h));

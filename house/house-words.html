@@ -86,7 +86,7 @@
     explain.innerHTML = "";
     nextBtn.classList.remove("show");
     pic.innerHTML = (w.svg ? sceneSVG({ furn: w.svg }) : `<span class="emo">${w.pic}</span>`) +
-      `<button class="snd" id="say" aria-label="Listen" data-icon="sound"></button>`;
+      `<button class="snd" id="say" aria-label="Listen"></button>`;
     pic.querySelector("#say").innerHTML = ICON_SOUND;
     pic.querySelector("#say").addEventListener("click", () => speak(w.en));
     const sameGroup = ROOM_WORDS.includes(w.en) === true;

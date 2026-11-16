@@ -70,8 +70,8 @@
     firstTry = true; done = false;
     nextBtn.classList.remove("show");
     planEl.querySelectorAll(".room.wrong").forEach(b => b.classList.remove("wrong"));
-    q = `The ${cell.room.en} is ${wherePhrase(cell)}.`;
-    $("q").innerHTML = `The <b>${cell.room.en}</b> is ${SIDES[cell.side][0]}, ${ROWS[cell.row][0]}.`;
+    q = `${Cap(cell.room.the)} is ${wherePhrase(cell)}.`;
+    $("q").innerHTML = `${Cap(cell.room.the).replace(cell.room.en, `<b>${cell.room.en}</b>`)} is ${SIDES[cell.side][0]}, ${ROWS[cell.row][0]}.`;
     if (round % PER_HOUSE) explain.innerHTML = "&nbsp;";
   }
 

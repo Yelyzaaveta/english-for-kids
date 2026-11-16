@@ -123,13 +123,15 @@ function sayWhere(prep, furn, room) {
 
 // ---- Floor plan: 3 rooms on the left, the hall in the middle, 3 rooms on the right ----
 const PLAN_ROOMS = [
-  { id: "kitchen",  en: "kitchen",          ua: "кухня",           icon: "🍳" },
-  { id: "living",   en: "living room",      ua: "вітальня",        icon: "🛋️" },
-  { id: "bathroom", en: "bathroom",         ua: "ванна кімната",   icon: "🛁" },
-  { id: "kate",     en: "Kate's bedroom",   ua: "спальня Кейт",    icon: "👧" },
-  { id: "eddie",    en: "Eddie's bedroom",  ua: "спальня Едді",    icon: "👦" },
-  { id: "granny",   en: "Granny's bedroom", ua: "спальня бабусі",  icon: "👵" },
+  { id: "kitchen",  en: "kitchen",          the: "the kitchen",     ua: "кухня",           icon: "🍳" },
+  { id: "living",   en: "living room",      the: "the living room", ua: "вітальня",        icon: "🛋️" },
+  { id: "bathroom", en: "bathroom",         the: "the bathroom",    ua: "ванна кімната",   icon: "🛁" },
+  { id: "kate",     en: "Kate's bedroom",   the: "Kate's bedroom",  ua: "спальня Кейт",    icon: "👧" },
+  { id: "eddie",    en: "Eddie's bedroom",  the: "Eddie's bedroom", ua: "спальня Едді",    icon: "👦" },
+  { id: "granny",   en: "Granny's bedroom", the: "Granny's bedroom", ua: "спальня бабусі",  icon: "👵" },
 ];
+// "the" is not used before a name: "the kitchen", but "Kate's bedroom"
+const Cap = s => s[0].toUpperCase() + s.slice(1);
 const SIDES = { left: ["on the left", "зліва"], right: ["on the right", "справа"] };
 const ROWS = [["at the top", "вгорі"], ["in the middle", "посередині"], ["at the bottom", "внизу"]];
 
