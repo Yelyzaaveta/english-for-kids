@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What Place Is It?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>What <span class="accent">place</span> is it?</h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task">Look and choose. <span class="ua">Подивись і обери, що це за місце.</span></p>
+  <div id="pic" style="margin-top:10px"></div>
+  <div class="answers grid2" id="answers"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+  const KEYS = Object.keys(PLACES);
+  const article = k => k === "house" ? "a house" : k === "camp" ? "a camp" : k === "village" ? "a village" : `a ${PLACES[k].en}`;
+
+  heartsGame({
+    hearts: 3,
+    makeRounds: () => rounds(KEYS, 10),
+    render(key, g) {
+      const p = PLACES[key];
+      document.getElementById("pic").innerHTML = `<img class="photo" src="${IMG}${p.img}" alt="">`;
+      const opts = shuffle([key, ...sample(KEYS.filter(k => k !== key), 3)]);
+      const box = document.getElementById("answers");
+      box.innerHTML = opts.map(k => `<button class="ans" data-k="${k}">${PLACES[k].en}</button>`).join("");
+      box.querySelectorAll(".ans").forEach(b => b.addEventListener("click", () => {
+        if (g.busy) return;
+        box.querySelectorAll(".ans").forEach(x => x.disabled = true);
+        const good = box.querySelector(`[data-k="${key}"]`);
+        good.classList.add("right");
+        const say = `It's ${article(key)}.`;
+        if (b === good) {
+          flash(b, "pop");
+          g.right(`It's ${article(key)}. <span class="ua">(${p.ua})</span>`, say);
+        } else {
+          b.classList.add("wrong"); flash(b, "shake");
+          g.wrong(`It's <b>${article(key)}</b>, not ${PLACES[b.dataset.k].en}. <span class="ua">(${p.ua})</span>`, say);
+        }
+      }));
+    },
+  });
+</script>
+</body>
+</html>

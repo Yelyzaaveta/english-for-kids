@@ -3,151 +3,91 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>In, On, Under</title>
+<title>In · On · Under</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/common.css">
 <link rel="stylesheet" href="../assets/house.css">
 <style>
-  .scene {
-    width: min(360px, 80vw, 38vh);
-    margin-top: clamp(8px, 2vh, 16px);
-    box-shadow: 0 10px 28px #00000050;
-    border-radius: 14px;
-  }
-  .qline { margin-bottom: clamp(8px, 1.8vh, 16px); }
+  .answers { margin-top: 12px; }
+  .ans { text-align: left; }
+  .match .mi:not(.pic-item) { font-size: clamp(15px, 2.4vh, 20px); }
+  .legend { color: var(--muted); font-size: clamp(14px, 2.1vh, 17px); margin-top: 4px; }
+  .legend b { color: var(--text); }
 </style>
 </head>
 <body>
 <header class="top">
   <a class="home" href="../" aria-label="Home"></a>
-  <h1>In · On · <span class="accent">Under</span></h1>
-  <div class="score" id="score">0</div>
+  <h1>In · <span class="accent">On</span> · Under</h1>
 </header>
 
 <main>
-  <div class="progress"><div id="bar"></div></div>
-  <div class="scene" id="scene"></div>
-  <div class="qline">
-    <span class="txt" id="q"></span>
-    <button class="snd" id="say" aria-label="Listen" data-icon="sound"></button>
-  </div>
-  <div class="answers" id="answers"></div>
+  <div id="hud"></div>
+  <p class="task" id="task"></p>
+  <div id="stage" style="margin-top:10px; display:flex; flex-direction:column; align-items:center; width:100%"></div>
   <div class="explain" id="explain"></div>
+  <div class="legend"><b>in</b> — в &nbsp;·&nbsp; <b>on</b> — на &nbsp;·&nbsp; <b>under</b> — під</div>
 </main>
 
 <footer>
   <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
-  <button class="btn green" id="next" data-icon="next">Next</button>
 </footer>
 
 <script src="../assets/common.js"></script>
 <script src="../assets/house.js"></script>
 <script>
-  const ROUNDS = 12;
-  const COMBOS = Object.keys(PREPS_FOR).flatMap(f => PREPS_FOR[f].map(p => ({ furn: f, prep: p })));
-  const WALLS = ["kitchen", "living", "bedroom", "bathroom"];
+  const TOTAL = 20;
+  const stage = document.getElementById("stage"), task = document.getElementById("task");
+  const same = (a, b) => a.animal === b.animal && a.prep === b.prep && a.furn === b.furn;
+  const differsBy = (a, b) => (a.animal !== b.animal) + (a.prep !== b.prep) + (a.furn !== b.furn);
 
-  const $ = id => document.getElementById(id);
-  const answers = $("answers"), explain = $("explain"), bar = $("bar"), scoreEl = $("score"), nextBtn = $("next");
-  let round, score, firstTry, done, cur, queue;
-
-  const uaPlace = c => c.prep === "under"
-    ? `під ${UA_UNDER[c.furn]}`
-    : `${PREPS[c.prep]} ${UA_ON_IN[c.furn]}`;
-
-  function start() {
-    // every combo at least once, then extra random ones
-    queue = shuffle(COMBOS).concat(sample(COMBOS, ROUNDS)).slice(0, ROUNDS);
-    round = 0; score = 0;
-    scoreEl.textContent = 0;
-    bar.style.width = "0%";
-    newRound();
-  }
-
-  function newRound() {
-    const c = queue[round];
-    const thing = pick(Object.values(THINGS));
-    // Odd rounds: "Is it ...?" yes/no. Even rounds: "Where is the ...?"
-    const yesNo = round % 2 === 1;
-    cur = { ...c, thing, yesNo };
-    firstTry = true; done = false;
-    explain.innerHTML = "";
-    nextBtn.classList.remove("show");
-    $("scene").className = "scene";
-    $("scene").innerHTML = sceneSVG({ furn: c.furn, prep: c.prep, thing: thing.emoji, room: pick(WALLS) });
-
-    let opts;
-    if (yesNo) {
-      // half the time ask about the right place, half the time about a wrong one
-      const truth = Math.random() < 0.5;
-      const asked = truth ? c : pick(similar(c));
-      cur.asked = asked;
-      cur.q = `Is the ${thing.en} ${asked.prep} the ${asked.furn}?`;
-      cur.answer = truth ? "Yes, it is." : "No, it isn't.";
-      opts = ["Yes, it is.", "No, it isn't."];
-      answers.className = "answers two";
-    } else {
-      cur.q = `Where is the ${thing.en}?`;
-      cur.answer = sentence(c);
-      opts = shuffle([cur.answer, ...sample(similar(c), 2).map(sentence)]);
-      answers.className = "answers";
+  // 2 wrong sentences that differ from the right one in just one thing (animal, place word or furniture)
+  function distractors(s) {
+    const close = shuffle(SCENES.filter(x => differsBy(x, s) === 1));
+    const out = [];
+    for (const x of close) {
+      // prefer one that changes the preposition, so in/on/under is always practised
+      if (out.length === 0 && x.prep === s.prep && close.some(y => y.prep !== s.prep)) continue;
+      out.push(x);
+      if (out.length === 2) break;
     }
-    $("q").textContent = cur.q;
-    answers.innerHTML = "";
-    opts.forEach(o => {
-      const b = document.createElement("button");
-      b.className = "ans";
-      b.textContent = o;
-      b.addEventListener("click", () => choose(b, o));
-      answers.appendChild(b);
-    });
+    return out;
   }
 
-  const sentence = c => `It's ${c.prep} the ${c.furn}.`;
-
-  // Wrong places that look close: same furniture with another word, or same word with other furniture
-  function similar(c) {
-    const others = COMBOS.filter(x => !(x.furn === c.furn && x.prep === c.prep));
-    const close = others.filter(x => x.furn === c.furn || x.prep === c.prep);
-    return close.length >= 2 ? close : others;
-  }
-
-  function choose(btn, o) {
-    if (done) return;
-    const thingUa = cur.thing.ua;
-    if (o !== cur.answer) {
-      firstTry = false;
-      btn.classList.add("wrong");
-      btn.disabled = true;
-      flash(btn, "shake");
-      flash($("scene"), "shake");
-      explain.innerHTML = `Look at the picture again! 👀`;
-      return;
-    }
-    done = true;
-    if (firstTry) { score++; scoreEl.textContent = score; }
-    round++;
-    bar.style.width = (round / ROUNDS * 100) + "%";
-    btn.classList.add("right");
-    flash(btn, "pop");
-    answers.querySelectorAll(".ans").forEach(b => b.disabled = true);
-    const full = `The ${cur.thing.en} is ${cur.prep} the ${cur.furn}.`;
-    explain.innerHTML = `<b>${full}</b><br><span class="ua">${cap(thingUa)} ${uaPlace(cur)}.</span>`;
-    speak(full);
-    nextBtn.lastChild.textContent = round >= ROUNDS ? "Finish" : "Next";
-    nextBtn.classList.add("show");
-  }
-  const cap = s => s[0].toUpperCase() + s.slice(1);
-
-  nextBtn.addEventListener("click", () => {
-    if (round >= ROUNDS) showResult({ score, total: ROUNDS, onAgain: start });
-    else newRound();
+  heartsGame({
+    hearts: 5,
+    makeRounds: () => {
+      const order = rounds(SCENES, TOTAL);
+      return order.map((s, i) => i % 4 === 3
+        ? { type: "match", scenes: [s, ...sample(SCENES.filter(x => !same(x, s)), 2)] }
+        : { type: "quiz", s });
+    },
+    render(r, g) {
+      if (r.type === "quiz") {
+        task.innerHTML = `Look and choose. <span class="ua">Подивись і обери правильне речення.</span>`;
+        const opts = shuffle([r.s, ...distractors(r.s)]);
+        stage.innerHTML = `<div class="scene">${sceneSVG(r.s)}</div>
+          <div class="answers">${opts.map((o, k) => `<button class="ans" data-k="${k}">${sceneText(o)}</button>`).join("")}</div>`;
+        const btns = stage.querySelectorAll(".ans");
+        const good = btns[opts.indexOf(r.s)];
+        btns.forEach(b => b.addEventListener("click", () => {
+          if (g.busy) return;
+          btns.forEach(x => x.disabled = true);
+          good.classList.add("right");
+          const t = sceneText(r.s);
+          if (b === good) { flash(b, "pop"); g.right(t, t); }
+          else { b.classList.add("wrong"); flash(b, "shake"); g.wrong(`Правильно: <b>${t}</b>`, t); }
+        }));
+      } else {
+        task.innerHTML = `Match the pictures and the sentences. <span class="ua">З'єднай картинку з реченням.</span>`;
+        stage.innerHTML = `<div id="board"></div>`;
+        const pairs = r.scenes.map(s => ({ left: sceneSVG(s), right: sceneText(s), msg: sceneText(s), say: sceneText(s) }));
+        matchBoard(stage.querySelector("#board"), pairs, g, { leftCls: "pic-item" });
+      }
+    },
   });
-  $("say").addEventListener("click", () => cur && speak(cur.q));
-  $("restart").addEventListener("click", start);
-  start();
 </script>
 </body>
 </html>

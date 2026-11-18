@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>am · is · are: Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .gap { display: inline-block; min-width: 2.6em; border-bottom: 3px solid var(--yellow); text-align: center; color: var(--yellow); font-weight: 700; }
+  .qline .txt { font-size: clamp(22px, 4.2vh, 34px); }
+  .answers { grid-template-columns: repeat(3, 1fr); width: min(520px, 100%); margin-top: 6px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>am · is · are <span class="accent">Quiz</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task">Choose the right word. <span class="ua">Обери правильне слово.</span></p>
+  <div class="qline"><span class="txt" id="q"></span></div>
+  <div class="answers" id="answers"></div>
+  <div class="explain" id="explain"></div>
+  <a href="am-is-are.html" class="task" style="text-decoration:none">📘 Правило</a>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+  // [sentence with ___, answer, why]
+  const ITEMS = [
+    ["I ___ at home.", "am", "I → am"],
+    ["I ___ in the bathroom.", "am", "I → am"],
+    ["Bill ___ at the camp.", "is", "Bill → he → is"],
+    ["Mum ___ at home.", "is", "Mum → she → is"],
+    ["Kate ___ in the village.", "is", "Kate → she → is"],
+    ["Granny ___ in the kitchen.", "is", "Granny → she → is"],
+    ["He ___ in the bedroom.", "is", "he → is"],
+    ["The cat ___ on the sofa.", "is", "the cat → it → is"],
+    ["Where ___ the kitchen?", "is", "the kitchen → it → is"],
+    ["Where ___ Bill?", "is", "Bill → he → is"],
+    ["It ___ on the right.", "is", "it → is"],
+    ["We ___ in the living room.", "are", "we → are"],
+    ["You ___ in the bedroom.", "are", "you → are"],
+    ["They ___ at the camp.", "are", "they → are"],
+    ["Bill and Kate ___ in the village.", "are", "Bill and Kate → they → are"],
+    ["Mum and Dad ___ at home.", "are", "Mum and Dad → they → are"],
+    ["The dogs ___ under the bed.", "are", "the dogs → they → are"],
+    ["Where ___ you?", "are", "you → are"],
+    ["___ you at home?", "Are", "you → are"],
+    ["___ Kate in the village?", "Is", "Kate → she → is"],
+  ];
+
+  heartsGame({
+    hearts: 4,
+    makeRounds: () => sample(ITEMS, 12),
+    render([s, ans, why], g) {
+      const q = document.getElementById("q");
+      q.innerHTML = s.replace("___", `<span class="gap">?</span>`);
+      const capital = s.startsWith("___");
+      const opts = capital ? ["Am", "Is", "Are"] : ["am", "is", "are"];
+      const box = document.getElementById("answers");
+      box.innerHTML = opts.map(o => `<button class="ans">${o}</button>`).join("");
+      box.querySelectorAll(".ans").forEach(b => b.addEventListener("click", () => {
+        if (g.busy) return;
+        box.querySelectorAll(".ans").forEach(x => { x.disabled = true; if (x.textContent === ans) x.classList.add("right"); });
+        const full = s.replace("___", ans);
+        q.innerHTML = s.replace("___", `<b>${ans}</b>`);
+        const msg = `<b>${full}</b> <span class="ua">(${why})</span>`;
+        if (b.textContent === ans) { flash(b, "pop"); g.right(msg, full); }
+        else { b.classList.add("wrong"); flash(b, "shake"); g.wrong(msg, full); }
+      }));
+    },
+  });
+</script>
+</body>
+</html>

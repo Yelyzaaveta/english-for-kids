@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Where Is Bill?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .who { font-size: 1.3em; margin-right: 4px; }
+  .pills { margin-top: 10px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Where is <span class="accent">Bill?</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <div class="pills">
+    <button class="pill active" data-mode="read">📖 Read</button>
+    <button class="pill" data-mode="listen">👂 Listen</button>
+  </div>
+  <div class="qline">
+    <span class="txt" id="q"></span>
+    <button class="snd" id="say" aria-label="Listen" data-icon="sound"></button>
+  </div>
+  <div class="pics" id="pics"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+  const KEYS = Object.keys(PLACES);
+  let mode = "read", cur;
+
+  function sayIt() { if (cur) speak(`${cur.who.name} is ${PLACES[cur.place].at}. Where is ${cur.who.name}?`); }
+  function drawQ() {
+    if (!cur) return;
+    const { who, place } = cur;
+    document.getElementById("q").innerHTML = mode === "read"
+      ? `<span class="who">${who.emoji}</span>${who.name} is <b>${PLACES[place].at}</b>.<br>Where is ${who.name}?`
+      : `<span class="who">${who.emoji}</span>Listen! Where is ${who.name}? 👂`;
+  }
+
+  heartsGame({
+    hearts: 3,
+    makeRounds: () => rounds(KEYS, 10).map(place => ({ place, who: pick(PEOPLE) })),
+    render(r, g) {
+      cur = r;
+      drawQ();
+      if (mode === "listen") sayIt();
+      const box = document.getElementById("pics");
+      const opts = shuffle([r.place, ...sample(KEYS.filter(k => k !== r.place), 3)]);
+      box.innerHTML = opts.map(k => `<button class="pic" data-k="${k}">
+          <img src="${IMG}${PLACES[k].img}" alt=""><span class="cap">${PLACES[k].en}</span></button>`).join("");
+      box.querySelectorAll(".pic").forEach(b => b.addEventListener("click", () => {
+        if (g.busy) return;
+        const good = box.querySelector(`[data-k="${r.place}"]`);
+        good.classList.add("right");
+        const ans = `${r.who.pro} is ${PLACES[r.place].at}.`;
+        const msg = `Where is ${r.who.name}? — <b>${ans}</b> <span class="ua">(${r.who.name} → ${r.who.pro.toLowerCase()})</span>`;
+        const say = `Where is ${r.who.name}? ${ans}`;
+        if (b === good) { flash(b, "pop"); g.right(msg, say); }
+        else { b.classList.add("wrong"); flash(b, "shake"); g.wrong(msg, say); }
+      }));
+    },
+  });
+
+  document.getElementById("say").addEventListener("click", sayIt);
+  document.querySelectorAll(".pill").forEach(p => p.addEventListener("click", () => {
+    document.querySelectorAll(".pill").forEach(x => x.classList.toggle("active", x === p));
+    mode = p.dataset.mode;
+    drawQ();
+    if (mode === "listen") sayIt();
+  }));
+</script>
+</body>
+</html>

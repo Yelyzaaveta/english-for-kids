@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>am · is · are</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<style>
+  main { justify-content: flex-start; }
+  .page { width: min(760px, 100%); padding-bottom: 24px; }
+  .intro { text-align: center; color: var(--muted); font-size: clamp(16px, 2.4vh, 19px); margin: 6px 0 18px; line-height: 1.5; }
+  .intro b { color: var(--yellow); }
+  .rule {
+    display: grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: start;
+    padding: 16px 18px; margin-bottom: 14px;
+    border-radius: 18px; border: 1px solid var(--card-edge);
+    border-left: 6px solid var(--c);
+    background: linear-gradient(180deg, var(--card-top), var(--card));
+  }
+  .verb {
+    display: grid; place-items: center; height: 100%; min-height: 90px;
+    border-radius: 14px; font-size: 42px; font-weight: 800; color: var(--c);
+    background: color-mix(in srgb, var(--c) 16%, transparent);
+  }
+  .who { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .who small { font-size: 16px; font-weight: 500; color: var(--muted); }
+  .note { color: var(--yellow); font-size: 16px; margin: 0 0 8px; }
+  .ex { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: 19px; }
+  .ex b { color: var(--c); }
+  .ex .tr { color: var(--muted); font-size: 15px; }
+  .say {
+    flex: none; width: 34px; height: 34px; border-radius: 10px; cursor: pointer;
+    border: 1px solid var(--card-edge); background: var(--bg2); color: var(--yellow); font-size: 15px;
+  }
+  h2 { font-size: 15px; letter-spacing: 2px; text-transform: uppercase; color: var(--yellow); margin: 26px 0 10px; }
+  .box {
+    padding: 14px 18px; border-radius: 16px; border: 1px solid var(--card-edge);
+    background: linear-gradient(180deg, var(--card-top), var(--card)); font-size: 18px; line-height: 1.6;
+  }
+  .box .arrow { color: var(--muted); }
+  .box b { color: var(--green); }
+  .shorts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .shorts div { padding: 8px 12px; border-radius: 10px; background: var(--bg2); font-size: 17px; }
+  .shorts b { color: var(--yellow); }
+  .go { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 26px; }
+  .go a { text-decoration: none; }
+  @media (max-width: 520px) {
+    .rule { grid-template-columns: 1fr; }
+    .verb { min-height: 60px; font-size: 34px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>am · <span class="accent">is</span> · are</h1>
+</header>
+
+<main>
+<div class="page">
+  <p class="intro">Слова <b>am, is, are</b> означають «є, знаходиться».<br>
+    Українською ми їх часто не кажемо: «Білл у таборі», а англійською обов'язково: <b>Bill is at the camp.</b></p>
+
+  <div class="rule" style="--c: var(--purple)">
+    <div class="verb">am</div>
+    <div>
+      <div class="who">I <small>— я</small></div>
+      <p class="note">Тільки з I. Більше ні з ким!</p>
+      <div class="ex"><button class="say">🔊</button><span>I <b>am</b> at home. <span class="tr">Я вдома.</span></span></div>
+      <div class="ex"><button class="say">🔊</button><span>I <b>am</b> in the kitchen. <span class="tr">Я на кухні.</span></span></div>
+    </div>
+  </div>
+
+  <div class="rule" style="--c: var(--blue)">
+    <div class="verb">is</div>
+    <div>
+      <div class="who">he · she · it <small>— він, вона, воно (один)</small></div>
+      <p class="note">Один хлопчик, одна дівчинка, одна тваринка чи річ.</p>
+      <div class="ex"><button class="say">🔊</button><span>Bill <b>is</b> at the camp. <span class="tr">Білл у таборі.</span></span></div>
+      <div class="ex"><button class="say">🔊</button><span>Mum <b>is</b> at home. <span class="tr">Мама вдома.</span></span></div>
+      <div class="ex"><button class="say">🔊</button><span>Kate <b>is</b> in the village. <span class="tr">Кейт у селі.</span></span></div>
+      <div class="ex"><button class="say">🔊</button><span>The cat <b>is</b> on the sofa. <span class="tr">Кіт на дивані.</span></span></div>
+    </div>
+  </div>
+
+  <div class="rule" style="--c: var(--green)">
+    <div class="verb">are</div>
+    <div>
+      <div class="who">we · you · they <small>— ми, ти/ви, вони</small></div>
+      <p class="note">Багато людей чи речей. І завжди з you!</p>
+      <div class="ex"><button class="say">🔊</button><span>We <b>are</b> in the living room. <span class="tr">Ми у вітальні.</span></span></div>
+      <div class="ex"><button class="say">🔊</button><span>You <b>are</b> in the bedroom. <span class="tr">Ти в спальні.</span></span></div>
+      <div class="ex"><button class="say">🔊</button><span>Bill and Kate <b>are</b> at the camp. <span class="tr">Білл і Кейт у таборі.</span></span></div>
+      <div class="ex"><button class="say">🔊</button><span>The dogs <b>are</b> under the bed. <span class="tr">Собаки під ліжком.</span></span></div>
+    </div>
+  </div>
+
+  <h2>🧠 Як швидко вибрати?</h2>
+  <div class="box">
+    Bill <span class="arrow">→</span> he <span class="arrow">→</span> <b>is</b><br>
+    Mum <span class="arrow">→</span> she <span class="arrow">→</span> <b>is</b><br>
+    the kitchen <span class="arrow">→</span> it <span class="arrow">→</span> <b>is</b><br>
+    Bill and Kate <span class="arrow">→</span> they <span class="arrow">→</span> <b>are</b>
+  </div>
+
+  <h2>❓ Питання — дієслово стає першим</h2>
+  <div class="box">
+    <div class="ex" style="--c: var(--green)"><button class="say">🔊</button><span>Where <b>is</b> Bill? — He <b>is</b> at the camp.</span></div>
+    <div class="ex" style="--c: var(--green)"><button class="say">🔊</button><span>Where <b>are</b> you? — I <b>am</b> at home.</span></div>
+    <div class="ex" style="--c: var(--green)"><button class="say">🔊</button><span>Where <b>is</b> the kitchen? — It <b>is</b> on the right.</span></div>
+    <div class="ex" style="--c: var(--green)"><button class="say">🔊</button><span><b>Is</b> Kate in the village? — Yes, she <b>is</b>.</span></div>
+  </div>
+
+  <h2>✂️ Коротко</h2>
+  <div class="shorts">
+    <div>I am = <b>I'm</b></div>
+    <div>he is = <b>he's</b></div>
+    <div>she is = <b>she's</b></div>
+    <div>it is = <b>it's</b></div>
+    <div>we are = <b>we're</b></div>
+    <div>you are = <b>you're</b></div>
+    <div>they are = <b>they're</b></div>
+  </div>
+
+  <div class="go">
+    <a class="btn blue" href="am-is-are-match.html">🔗 Гра: з'єднай</a>
+    <a class="btn green" href="am-is-are-quiz.html">✅ Гра: обери слово</a>
+  </div>
+</div>
+</main>
+
+<script src="../assets/common.js"></script>
+<script>
+  document.querySelectorAll(".say").forEach(b => b.addEventListener("click", () => {
+    const txt = b.nextElementSibling.cloneNode(true);
+    txt.querySelectorAll(".tr").forEach(t => t.remove());
+    speak(txt.textContent.trim());
+  }));
+</script>
+</body>
+</html>

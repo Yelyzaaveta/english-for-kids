@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>am · is · are: Match</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>am · is · are <span class="accent">Match</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task">Match the halves. <span class="ua">Натисни зліва, потім справа — з'єднай речення.</span></p>
+  <div id="board" style="margin-top:14px"></div>
+  <div class="explain" id="explain"></div>
+  <a href="am-is-are.html" class="task" style="text-decoration:none">📘 Правило</a>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+  const SUBJ = {
+    am:  ["I"],
+    is:  ["Bill", "Mum", "Kate", "Dad", "Granny", "He", "She", "It", "The cat", "The dog"],
+    are: ["We", "You", "They", "Bill and Kate", "Mum and Dad", "The cats", "The dogs"],
+  };
+  const PLACE = ["at home", "at the camp", "in the village", "in the kitchen", "in the bathroom",
+                 "in the bedroom", "in the living room", "on the sofa", "under the bed", "on the carpet"];
+
+  heartsGame({
+    hearts: 4,
+    makeRounds: () => Array.from({ length: 7 }, () => {
+      const places = sample(PLACE, 3);
+      return ["am", "is", "are"].map((v, k) => {
+        const s = pick(SUBJ[v]);
+        const sentence = `${s} ${v} ${places[k]}.`;
+        return { left: s, right: `${v} ${places[k]}.`, msg: sentence, say: sentence };
+      });
+    }),
+    render(pairs, g) {
+      matchBoard(document.getElementById("board"), shuffle(pairs), g);
+    },
+  });
+</script>
+</body>
+</html>

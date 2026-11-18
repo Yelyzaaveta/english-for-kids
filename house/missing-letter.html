@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Missing Letter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .photo { height: min(30vh, 56vw); }
+  .photo.emo { font-size: min(18vh, 32vw); }
+  .word { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 4px 0 2px; }
+  .ch, .word input {
+    width: clamp(36px, 6.4vh, 54px); height: clamp(46px, 8vh, 66px);
+    display: grid; place-items: center;
+    font: inherit; font-size: clamp(24px, 4.6vh, 38px); font-weight: 800; text-align: center;
+    border-radius: 12px; border: 2px solid var(--card-edge);
+    background: linear-gradient(180deg, var(--card-top), var(--card)); color: var(--text);
+  }
+  .ch.sp { border: 0; background: none; width: 16px; }
+  .word input { border-color: var(--yellow); color: var(--yellow); outline: none; padding: 0; caret-color: var(--yellow); }
+  .word input:focus { box-shadow: 0 0 0 3px #ffc93c55; }
+  .word input.right { border-color: var(--green); color: var(--green); background: #3ddc8422; }
+  .word input.wrong { border-color: var(--red); color: var(--red); background: #ff5a5f22; }
+  .row { display: flex; align-items: center; gap: 12px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Missing <span class="accent">Letter</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task">Type the missing letter. <span class="ua">Впиши пропущену букву.</span></p>
+  <div id="pic" style="margin-top:8px"></div>
+  <div class="row">
+    <div class="word" id="word"></div>
+    <button class="snd" id="say" aria-label="Listen" data-icon="sound"></button>
+  </div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+  const ALL = [...WORDS, ...EXTRA_WORDS];
+  let cur = null;
+
+  heartsGame({
+    hearts: 4,
+    makeRounds: () => shuffle(ALL).map(w => {
+      const idx = [...w.en].map((c, i) => i).filter(i => w.en[i] !== " ");
+      return { w, gap: pick(idx) };
+    }),
+    render(r, g) {
+      cur = r;
+      const { w, gap } = r;
+      document.getElementById("pic").innerHTML = wordPic(w, "photo");
+      const wordEl = document.getElementById("word");
+      wordEl.innerHTML = [...w.en].map((c, i) =>
+        i === gap ? `<input maxlength="1" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="missing letter">`
+        : c === " " ? `<span class="ch sp"></span>` : `<span class="ch">${c}</span>`).join("");
+      const inp = wordEl.querySelector("input");
+      inp.focus();
+      inp.addEventListener("input", () => {
+        const v = inp.value.trim().toLowerCase();
+        if (!/^[a-z]$/.test(v)) { inp.value = ""; return; }
+        if (g.busy) return;
+        inp.readOnly = true;
+        const msg = `<b>${w.en}</b> <span class="ua">— ${w.ua}</span>`;
+        if (v === w.en[gap]) {
+          inp.classList.add("right"); flash(inp, "pop");
+          g.right(msg, w.en);
+        } else {
+          inp.classList.add("wrong"); flash(inp, "shake");
+          g.wrong(`Not <b>${v}</b>. ${msg}`, w.en);
+          setTimeout(() => { inp.value = w.en[gap]; inp.classList.replace("wrong", "right"); }, 700);
+        }
+      });
+    },
+  });
+
+  document.getElementById("say").addEventListener("click", () => cur && speak(cur.w.en, .75));
+  // tap anywhere on the word -> keyboard opens again
+  document.getElementById("word").addEventListener("click", () => document.querySelector("#word input")?.focus());
+</script>
+</body>
+</html>

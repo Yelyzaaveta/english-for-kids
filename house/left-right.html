@@ -3,138 +3,101 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Left or Right</title>
+<title>Left or Right?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/common.css">
 <link rel="stylesheet" href="../assets/house.css">
 <style>
-  .plan .room { cursor: default; }
-  .plan .room:hover { background: #e9d8bf14; }
-  .plan .room.target:hover { background: #ffc93c33; }
-  .qline { margin: clamp(6px, 1.5vh, 12px) 0; }
+  .home-plan { width: min(520px, 100%); }
+  .roof { height: clamp(26px, 6vh, 48px); background: #b5523b; clip-path: polygon(50% 0, 100% 100%, 0 100%); margin: 0 -14px; }
+  .halves {
+    display: grid; grid-template-columns: 1fr 6px 1fr; gap: 10px;
+    padding: 10px; background: #e9d8bf22; border: 3px solid #6c7f9c; border-top: 0;
+  }
+  .wall { background: #6c7f9c; border-radius: 3px; }
+  .half { display: flex; flex-direction: column; gap: 10px; }
+  .room { position: relative; border-radius: 12px; overflow: hidden; border: 3px solid transparent; transition: border-color .2s; }
+  .room img { display: block; width: 100%; height: min(17vh, 28vw); object-fit: cover; }
+  .room span {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 3px 6px;
+    background: #0b1220c8; font-weight: 700; font-size: clamp(13px, 2.1vh, 17px); text-align: center;
+  }
+  .room.ask { border-color: var(--yellow); }
+  .room.right { border-color: var(--green); }
+  .lr { display: flex; justify-content: space-between; margin-top: 6px; font-weight: 800; font-size: clamp(15px, 2.4vh, 19px); color: var(--blue); }
+  .answers { margin-top: 4px; }
 </style>
 </head>
 <body>
 <header class="top">
   <a class="home" href="../" aria-label="Home"></a>
   <h1>Left or <span class="accent">Right?</span></h1>
-  <div class="score" id="score">0</div>
 </header>
 
 <main>
-  <div class="progress"><div id="bar"></div></div>
-  <p class="task">Look at the plan. Подивись на план будинку</p>
-  <div id="plan"></div>
-  <div class="lr"><span>⬅ on the left</span><span>on the right ➡</span></div>
+  <div id="hud"></div>
   <div class="qline">
     <span class="txt" id="q"></span>
     <button class="snd" id="say" aria-label="Listen" data-icon="sound"></button>
   </div>
-  <div class="answers" id="answers"></div>
+  <div class="home-plan">
+    <div class="roof"></div>
+    <div class="halves">
+      <div class="half" id="left"></div>
+      <div class="wall"></div>
+      <div class="half" id="right"></div>
+    </div>
+    <div class="lr"><span>⬅ left</span><span>right ➡</span></div>
+  </div>
+  <div class="answers two" id="answers">
+    <button class="ans" data-side="left">⬅ It is on the left.</button>
+    <button class="ans" data-side="right">It is on the right. ➡</button>
+  </div>
   <div class="explain" id="explain"></div>
 </main>
 
 <footer>
   <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
-  <button class="btn green" id="next" data-icon="next">Next</button>
 </footer>
 
 <script src="../assets/common.js"></script>
 <script src="../assets/house.js"></script>
 <script>
-  const ROUNDS = 12;
-  const EASY = 4; // first rounds: only "on the left / on the right"
+  let q = "", cur, game;
+  const tile = k => `<div class="room" data-k="${k}"><img src="${IMG}${PLACES[k].img}" alt=""><span>${PLACES[k].en}</span></div>`;
 
-  const $ = id => document.getElementById(id);
-  const planEl = $("plan"), answers = $("answers"), explain = $("explain"), bar = $("bar"), scoreEl = $("score"), nextBtn = $("next");
-  let round, score, firstTry, done, house, cell, answer, q;
-
-  function start() {
-    round = 0; score = 0;
-    scoreEl.textContent = 0;
-    bar.style.width = "0%";
-    newRound();
-  }
-
-  const full = c => `It's ${wherePhrase(c)}.`;
-  const short = c => `It's ${SIDES[c.side][0]}.`;
-
-  function newRound() {
-    house = randomHouse();
-    const i = Math.floor(Math.random() * house.length);
-    cell = house[i];
-    firstTry = true; done = false;
-    explain.innerHTML = "";
-    nextBtn.classList.remove("show");
-    renderPlan(planEl, house);
-    q = `Where is ${cell.room.the}?`;
-    $("q").textContent = q;
-
-    let opts;
-    if (round < EASY) {
-      answer = short(cell);
-      opts = ["It's on the left.", "It's on the right."];
-      answers.className = "answers two";
-    } else {
-      answer = full(cell);
-      // other rooms of the house give the wrong answers: same side, same row, and one more
-      const others = house.filter(c => c !== cell);
-      const sameSide = others.filter(c => c.side === cell.side);
-      const sameRow = others.filter(c => c.row === cell.row);
-      const wrong = [pick(sameSide), ...sameRow];
-      const rest = shuffle(others).filter(c => !wrong.includes(c));
-      opts = shuffle([cell, ...wrong, rest[0]].slice(0, 4).map(full));
-      answers.className = "answers grid2";
-    }
-    answers.innerHTML = "";
-    opts.forEach(o => {
-      const b = document.createElement("button");
-      b.className = "ans";
-      b.textContent = o;
-      b.addEventListener("click", () => choose(b, o));
-      answers.appendChild(b);
-    });
-  }
-
-  function choose(btn, o) {
-    if (done) return;
-    if (o !== answer) {
-      firstTry = false;
-      btn.classList.add("wrong");
-      btn.disabled = true;
-      flash(btn, "shake");
-      explain.innerHTML = `Find <b>${cell.room.the}</b> (<span class="ua">${cell.room.ua}</span>) on the plan.`;
-      return;
-    }
-    done = true;
-    if (firstTry) { score++; scoreEl.textContent = score; }
-    round++;
-    bar.style.width = (round / ROUNDS * 100) + "%";
-    btn.classList.add("right");
-    flash(btn, "pop");
-    answers.querySelectorAll(".ans").forEach(b => b.disabled = true);
-    const roomBtn = planEl.querySelector(`[data-i="${house.indexOf(cell)}"]`);
-    roomBtn.classList.add("target");
-    flash(roomBtn, "pop");
-    const easy = answer === short(cell);
-    const ua = easy ? SIDES[cell.side][1] : wherePhraseUa(cell);
-    explain.innerHTML = `<b>${Cap(cell.room.the)} is ${easy ? SIDES[cell.side][0] : wherePhrase(cell)}.</b><br>` +
-      `<span class="ua">${cap(cell.room.ua)} — ${ua}.</span>`;
-    speak(`${Cap(cell.room.the)} is ${easy ? SIDES[cell.side][0] : wherePhrase(cell)}.`);
-    nextBtn.lastChild.textContent = round >= ROUNDS ? "Finish" : "Next";
-    nextBtn.classList.add("show");
-  }
-  const cap = s => s[0].toUpperCase() + s.slice(1);
-
-  nextBtn.addEventListener("click", () => {
-    if (round >= ROUNDS) showResult({ score, total: ROUNDS, onAgain: start });
-    else newRound();
+  game = heartsGame({
+    hearts: 3,
+    makeRounds: () => rounds(ROOM_KEYS, 10).map(ask => {
+      const order = shuffle(ROOM_KEYS);
+      return { ask, left: order.slice(0, 2), right: order.slice(2), side: order.indexOf(ask) < 2 ? "left" : "right" };
+    }),
+    render(r, g) {
+      cur = r;
+      document.getElementById("left").innerHTML = r.left.map(tile).join("");
+      document.getElementById("right").innerHTML = r.right.map(tile).join("");
+      document.querySelector(`.room[data-k="${r.ask}"]`).classList.add("ask");
+      q = `Where is the ${PLACES[r.ask].en}?`;
+      document.getElementById("q").innerHTML = `Where is the <b>${PLACES[r.ask].en}</b>?`;
+      document.querySelectorAll("#answers .ans").forEach(b => { b.disabled = false; b.classList.remove("right", "wrong"); });
+    },
   });
-  $("say").addEventListener("click", () => q && speak(q));
-  $("restart").addEventListener("click", start);
-  start();
+
+  document.querySelectorAll("#answers .ans").forEach(b => b.addEventListener("click", () => {
+    if (game.busy || !cur) return;
+    document.querySelectorAll("#answers .ans").forEach(x => x.disabled = true);
+    const good = document.querySelector(`#answers [data-side="${cur.side}"]`);
+    good.classList.add("right");
+    document.querySelector(`.room[data-k="${cur.ask}"]`).classList.add("right");
+    const ans = `It is on the ${cur.side}.`;
+    const ua = cur.side === "left" ? "зліва" : "справа";
+    const msg = `${q} — <b>${ans}</b> <span class="ua">(${PLACES[cur.ask].ua} — ${ua})</span>`;
+    if (b === good) { flash(b, "pop"); game.right(msg, `${q} ${ans}`); }
+    else { b.classList.add("wrong"); flash(b, "shake"); game.wrong(msg, `${q} ${ans}`); }
+  }));
+  document.getElementById("say").addEventListener("click", () => q && speak(q));
 </script>
 </body>
 </html>

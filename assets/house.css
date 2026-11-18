@@ -1,41 +1,56 @@
 /* Shared styles for the "Where is ...?" block (house/) */
-.task { color: var(--muted); font-size: clamp(15px, 2.5vh, 20px); font-weight: 700; margin: 10px 0 0; text-align: center; }
+.task { color: var(--muted); font-size: clamp(15px, 2.4vh, 19px); font-weight: 700; margin: 8px 0 0; text-align: center; }
 .ua { color: var(--yellow); font-weight: 500; }
 
+/* Progress + hearts */
+#hud { display: flex; align-items: center; gap: 14px; width: min(620px, 100%); }
+#hud .progress { flex: 1; }
+.hearts { display: flex; gap: 2px; font-size: clamp(18px, 3vh, 24px); line-height: 1; }
+.hearts .lost { filter: grayscale(1) brightness(.45); opacity: .55; }
+.hearts .breaking { animation: heartbreak .7s; }
+@keyframes heartbreak {
+  0% { transform: scale(1); filter: none; opacity: 1; }
+  30% { transform: scale(1.5) rotate(-12deg); filter: none; opacity: 1; }
+  60% { transform: scale(.8) rotate(10deg); }
+}
+
+/* Question line */
 .qline {
   display: flex; align-items: center; gap: 14px;
   max-width: 780px;
-  margin: clamp(8px, 2vh, 18px) 0;
-  padding: clamp(10px, 2vh, 16px) clamp(14px, 3vw, 24px);
+  margin: clamp(8px, 1.8vh, 16px) 0;
+  padding: clamp(10px, 1.8vh, 14px) clamp(14px, 3vw, 24px);
   border-radius: 18px;
   background: linear-gradient(180deg, var(--card-top), var(--card));
   border: 1px solid var(--card-edge);
   border-left: 5px solid var(--yellow);
 }
-.qline .txt { font-size: clamp(20px, 3.8vh, 30px); font-weight: 500; line-height: 1.3; }
+.qline .txt { font-size: clamp(20px, 3.6vh, 30px); font-weight: 500; line-height: 1.35; }
 .qline .txt b { color: var(--yellow); font-weight: 700; }
 .snd {
-  flex: none; width: 44px; height: 44px; border-radius: 12px;
+  flex: none; width: 46px; height: 46px; border-radius: 12px;
   border: 1px solid var(--card-edge); background: var(--bg2); color: var(--yellow);
   display: grid; place-items: center; cursor: pointer; font-size: 20px;
 }
 .snd svg { width: 22px; height: 22px; }
 
 .explain {
-  min-height: 2.8em; margin-top: clamp(6px, 1.6vh, 14px);
+  min-height: 2.8em; margin-top: clamp(6px, 1.4vh, 12px);
   max-width: 720px; text-align: center;
-  font-size: clamp(15px, 2.5vh, 19px); color: var(--muted);
+  font-size: clamp(16px, 2.6vh, 20px); color: var(--muted);
 }
 .explain b { color: var(--text); }
+.explain .ok { color: var(--green); font-weight: 700; }
+.explain .ok b { color: var(--green); }
 
-/* Answer buttons with text */
-.answers { display: grid; gap: clamp(8px, 1.5vh, 12px); width: min(620px, 100%); }
+/* Text answers */
+.answers { display: grid; gap: clamp(8px, 1.4vh, 12px); width: min(620px, 100%); }
 .answers.two { grid-template-columns: 1fr 1fr; }
-@media (min-aspect-ratio: 5/4) { .answers.grid2 { grid-template-columns: 1fr 1fr; width: min(820px, 100%); } }
+@media (min-aspect-ratio: 5/4) { .answers.grid2 { grid-template-columns: 1fr 1fr; } }
 .ans {
   font: inherit; font-weight: 700;
-  font-size: clamp(16px, 2.8vh, 22px);
-  padding: clamp(10px, 1.9vh, 16px) 16px;
+  font-size: clamp(17px, 2.8vh, 23px);
+  padding: clamp(10px, 1.8vh, 16px) 16px;
   border-radius: 14px;
   border: 2px solid var(--card-edge);
   background: linear-gradient(180deg, var(--card-top), var(--card));
@@ -46,48 +61,71 @@
 .ans:hover { border-color: var(--yellow); }
 .ans:active { transform: scale(.98); }
 .ans.right { border-color: var(--green); background: #3ddc8426; color: var(--green); }
-.ans.wrong { border-color: var(--red); opacity: .45; }
+.ans.wrong { border-color: var(--red); background: #ff5a5f22; color: var(--red); }
 .ans:disabled { cursor: default; }
 
-/* Picture of a scene */
-.scene svg { display: block; width: 100%; height: auto; border-radius: 14px; }
-
-/* Floor plan */
-.plan {
-  --h: min(13.5vh, 22vw, 115px);
-  display: grid;
-  grid-template-columns: 1fr .62fr 1fr;
-  grid-template-rows: repeat(3, var(--h));
-  width: min(640px, 100%);
-  padding: 8px;
-  gap: 0;
-  background: #0b1220;
-  border: 3px solid #6c7f9c;
-  border-radius: 8px;
+/* Big photo / emoji */
+.photo {
+  display: block;
+  height: min(40vh, 70vw); max-width: 100%;
+  aspect-ratio: 4 / 3; object-fit: cover;
+  border-radius: 18px; border: 3px solid var(--card-edge);
+  margin-bottom: clamp(8px, 1.8vh, 16px);
 }
-.plan .room, .plan .hallway {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  font: inherit; color: var(--text);
-  border: 2px solid #6c7f9c;
-  margin: -1px;
-  background: #e9d8bf14;
-}
-.plan .room { cursor: pointer; transition: background .2s, border-color .15s; }
-.plan .room:hover { background: #ffc93c1f; }
-.plan .hallway { grid-column: 2; grid-row: 1 / 4; background: #ffffff0a; color: var(--muted); }
-.plan .ri { font-size: calc(var(--h) * .34); line-height: 1; }
-.plan .ri.q { color: var(--muted); font-weight: 800; }
-.plan .rn { font-size: clamp(12px, calc(var(--h) * .15), 19px); font-weight: 700; min-height: 1.2em; text-align: center; padding: 0 4px; }
-.plan .room.right { background: #3ddc8433; border-color: var(--green); position: relative; z-index: 1; }
-.plan .room.done { background: #3ddc8414; cursor: default; }
-.plan .room.wrong { background: #ff5a5f33; }
-.plan .room.target { background: #ffc93c33; border-color: var(--yellow); position: relative; z-index: 1; }
-.lr {
-  display: flex; justify-content: space-between;
-  width: min(640px, 100%);
-  margin-top: 6px;
-  font-weight: 700; font-size: clamp(14px, 2.3vh, 18px); color: var(--blue);
+.photo.emo {
+  display: grid; place-items: center;
+  font-size: min(24vh, 40vw); line-height: 1;
+  background: linear-gradient(180deg, var(--card-top), var(--card));
 }
 
-#next { display: none; }
-#next.show { display: inline-flex; }
+/* Picture answers (2 x 2) */
+.pics { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(8px, 1.4vh, 14px); width: min(560px, 100%); }
+.pic {
+  position: relative; padding: 0; overflow: hidden;
+  aspect-ratio: 4 / 3; max-height: 24vh; width: 100%;
+  border-radius: 16px; border: 3px solid var(--card-edge);
+  background: var(--card); cursor: pointer;
+  transition: border-color .15s, opacity .3s, transform .1s;
+}
+@media (max-aspect-ratio: 3/4) { .pic { max-height: none; } }
+.pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pic .emo { display: grid; place-items: center; height: 100%; font-size: min(13vh, 18vw); }
+.pic:hover { border-color: var(--yellow); }
+.pic.right { border-color: var(--green); box-shadow: 0 0 0 3px #3ddc8466; }
+.pic.wrong { border-color: var(--red); opacity: .55; }
+.pic .cap {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 4px 6px; font: inherit; font-weight: 700; font-size: clamp(14px, 2.2vh, 18px);
+  background: #0b1220d0; color: var(--text); display: none;
+}
+.pic.right .cap, .pic.wrong .cap { display: block; }
+
+/* Matching board */
+.match {
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: clamp(28px, 8vw, 90px);
+  width: min(760px, 100%);
+}
+.match .lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; overflow: visible; }
+.match .col { display: flex; flex-direction: column; gap: clamp(8px, 1.6vh, 14px); justify-content: center; }
+.mi {
+  font: inherit; font-weight: 700; font-size: clamp(16px, 2.6vh, 22px);
+  color: var(--text); text-align: center;
+  padding: clamp(8px, 1.6vh, 14px) 12px;
+  border-radius: 14px; border: 2px solid var(--card-edge);
+  background: linear-gradient(180deg, var(--card-top), var(--card));
+  cursor: pointer; transition: border-color .15s, background .2s;
+}
+.mi:hover { border-color: var(--yellow); }
+.mi.sel { border-color: var(--yellow); background: #ffc93c26; }
+.mi.right { border-color: var(--green); background: #3ddc8418; cursor: default; }
+.mi.fixed { border-color: var(--red); background: #ff5a5f18; cursor: default; }
+.mi.pic-item { padding: 4px; }
+.mi.pic-item svg { display: block; height: min(15vh, 24vw); width: auto; max-width: 100%; aspect-ratio: 10 / 7; margin: 0 auto; border-radius: 10px; }
+
+/* Scene picture (in / on / under) */
+.scene { max-width: 100%; }
+.scene svg { display: block; height: min(34vh, 60vw); width: auto; max-width: 100%; aspect-ratio: 10 / 7; border-radius: 16px; border: 3px solid var(--card-edge); }
+
+.hidden { display: none !important; }
