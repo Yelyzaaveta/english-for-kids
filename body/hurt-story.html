@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ouch!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .story { display: flex; align-items: center; gap: 14px; }
+  .story .emo { font-size: min(11vh, 20vw); line-height: 1; flex: none; }
+  .qline .txt { font-size: clamp(22px, 4vh, 34px); }
+  .word { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 12px 0 2px; }
+  .ch, .word input {
+    width: clamp(36px, 6.4vh, 54px); height: clamp(46px, 8vh, 66px);
+    display: grid; place-items: center;
+    font: inherit; font-size: clamp(24px, 4.6vh, 38px); font-weight: 800; text-align: center;
+    border-radius: 12px; border: 2px solid var(--card-edge);
+    background: linear-gradient(180deg, var(--card-top), var(--card)); color: var(--text);
+  }
+  .word input { border-color: var(--yellow); color: var(--yellow); outline: none; padding: 0; caret-color: var(--yellow); }
+  .word input:focus { box-shadow: 0 0 0 3px #ffc93c55; }
+  .word input.right { border-color: var(--green); color: var(--green); background: #3ddc8422; }
+  .word input.wrong { border-color: var(--red); color: var(--red); background: #ff5a5f22; }
+  .q2 { font-weight: 700; font-size: clamp(18px, 3vh, 24px); color: var(--muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1><span class="accent">Ouch!</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task" id="task"></p>
+  <div id="stage" style="margin-top:10px; display:flex; flex-direction:column; align-items:center; width:100%"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script src="../assets/body.js"></script>
+<script>
+  const stage = document.getElementById("stage"), task = document.getElementById("task");
+
+  heartsGame({
+    hearts: 4,
+    makeRounds: () => shuffle(STORIES).slice(0, 8),
+    render(s, g) {
+      const w = bodyWord(s.part);
+      task.innerHTML = `Read the text and answer. <span class="ua">Прочитай і дай відповідь.</span>`;
+      const names = shuffle(BODY.filter(b => b !== w && b.en !== "feet" && b.en !== "eye")).slice(0, 3);
+      const opts = shuffle([w, ...names]);
+      stage.innerHTML = `
+        <div class="qline"><button class="snd" id="say" aria-label="Listen">🔊</button><span class="txt">${s.text}</span></div>
+        <div class="q2">What did ${s.who} hurt?</div>
+        <div class="answers two" style="margin-top:10px">${opts.map((o, k) => `<button class="ans" data-k="${k}">${o.en}</button>`).join("")}</div>`;
+      stage.querySelector("#say").addEventListener("click", () => speak(s.text, .8));
+
+      const btns = [...stage.querySelectorAll(".ans")];
+      btns.forEach(b => b.addEventListener("click", () => {
+        if (g.busy) return;
+        btns.forEach(x => x.disabled = true);
+        const good = btns[opts.indexOf(w)];
+        good.classList.add("right");
+        if (b !== good) {
+          b.classList.add("wrong"); flash(b, "shake");
+          g.wrong(`${s.who} hurt ${s.his} <b>${w.en}</b>.`, s.text);
+          return;
+        }
+        flash(b, "pop");
+        g.right(`<b>${w.en}</b> <span class="ua">— ${w.ua}</span>`, w.en, { stay: true });
+        spellStep(s, w, g);
+      }));
+    },
+  });
+
+  // step 2: write the missing letters of the part
+  function spellStep(s, w, g) {
+    const at = w.en.indexOf(w.gap);
+    const box = document.createElement("div");
+    box.innerHTML = `<div class="q2">Write the missing letters: <span class="ua">впиши літери</span></div><div class="word"></div>`;
+    stage.appendChild(box);
+    const wordEl = box.querySelector(".word");
+    wordEl.innerHTML = [...w.en].map((c, i) =>
+      i >= at && i < at + w.gap.length
+        ? `<input maxlength="1" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="missing letter">`
+        : `<span class="ch">${c}</span>`).join("");
+    const inputs = [...wordEl.querySelectorAll("input")];
+    inputs[0].focus();
+    inputs.forEach((inp, k) => {
+      inp.addEventListener("input", () => {
+        const v = inp.value.trim().toLowerCase();
+        if (!/^[a-z]$/.test(v)) { inp.value = ""; return; }
+        inp.value = v;
+        if (k < inputs.length - 1) { inputs[k + 1].focus(); return; }
+        const typed = inputs.map(x => x.value).join("");
+        inputs.forEach(x => x.readOnly = true);
+        if (typed === w.gap) {
+          inputs.forEach(x => x.classList.add("right")); flash(wordEl, "pop");
+          g.right(`<b>${w.en}</b> ✓`, null, { stay: true });
+          g.done(1300);
+        } else {
+          inputs.forEach(x => x.classList.add("wrong")); flash(wordEl, "shake");
+          g.wrong(`Not <b>${typed}</b>. It's <b>${w.en}</b>.`, w.en, { stay: true });
+          setTimeout(() => inputs.forEach((x, j) => { x.value = w.gap[j]; x.classList.replace("wrong", "right"); }), 700);
+          g.done(2400);
+        }
+      });
+      inp.addEventListener("keydown", e => { if (e.key === "Backspace" && !inp.value && k > 0) inputs[k - 1].focus(); });
+    });
+  }
+</script>
+</body>
+</html>

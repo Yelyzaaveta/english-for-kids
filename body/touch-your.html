@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Touch Your…</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<style>
+  .modes { display: flex; gap: 10px; margin-bottom: clamp(10px, 3vh, 26px); }
+  .modes .pill { font-size: 16px; padding: 10px 20px; }
+  .modes .pill small { text-transform: none; letter-spacing: 0; font-weight: 500; opacity: .8; }
+  .stage { display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 3.5vh, 30px); width: min(720px, 100%); }
+  .cmd {
+    min-height: 2.6em; display: grid; place-items: center; text-align: center;
+    font-size: clamp(34px, 8.5vw, 78px); font-weight: 800; line-height: 1.1; letter-spacing: 1px;
+  }
+  .cmd b { color: var(--yellow); }
+  .cmd.idle { font-size: clamp(22px, 5vw, 34px); color: var(--muted); font-weight: 700; }
+  .ring { position: relative; width: min(30vh, 52vw, 220px); aspect-ratio: 1; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-width: 10; }
+  .ring .bg { stroke: var(--card-edge); }
+  .ring .fg { stroke: var(--green); stroke-linecap: round; }
+  .ring.low .fg { stroke: var(--red); }
+  .ring .num {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font-size: min(11vh, 22vw, 84px); font-weight: 800;
+  }
+  .count { color: var(--muted); font-weight: 700; font-size: 18px; letter-spacing: 1px; }
+  .ctrl { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .tog { font: inherit; font-weight: 700; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Touch <span class="accent">Your…</span></h1>
+  <div class="score" id="score">0</div>
+</header>
+
+<main>
+  <div class="stage">
+    <div class="modes">
+      <button class="pill active" data-t="10">Easy <small>10 sec</small></button>
+      <button class="pill" data-t="5">Hard <small>5 sec</small></button>
+    </div>
+    <div class="cmd idle" id="cmd">Press START</div>
+    <div class="ring" id="ring">
+      <svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="44"/><circle class="fg" id="fg" cx="50" cy="50" r="44" style="stroke-dasharray:276.46;stroke-dashoffset:276.46"/></svg>
+      <div class="num" id="num">–</div>
+    </div>
+    <div class="count" id="count">&nbsp;</div>
+  </div>
+</main>
+
+<footer>
+  <button class="btn green" id="go">Start</button>
+  <button class="btn ghost" id="pause" disabled>Pause</button>
+  <button class="btn ghost" id="skip" disabled>Skip →</button>
+  <button class="btn ghost tog" id="snd">🔇 Sound off</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/body.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const CIRC = 2 * Math.PI * 44;
+  const VERBS = ["Touch your", "Touch your", "Touch your", "Point to your", "Show me your"];
+  let secs = 10, list = [], i = 0, left = 0, t0 = 0, raf = 0, running = false, paused = false, sound = false, done = 0;
+
+  document.querySelectorAll(".modes .pill").forEach(p => p.addEventListener("click", () => {
+    document.querySelectorAll(".modes .pill").forEach(x => x.classList.toggle("active", x === p));
+    secs = +p.dataset.t;
+    if (running) begin();   // switching mode restarts the round
+  }));
+
+  function beep() {
+    try {
+      const a = new (window.AudioContext || window.webkitAudioContext)(), o = a.createOscillator(), g = a.createGain();
+      o.connect(g); g.connect(a.destination); o.frequency.value = 660; g.gain.value = .08;
+      o.start(); o.stop(a.currentTime + .15);
+    } catch (e) {}
+  }
+
+  function begin() {
+    cancelAnimationFrame(raf);
+    list = shuffle(BODY).map((w, k) => ({ w, verb: VERBS[k % VERBS.length] }));
+    i = 0; done = 0; running = true; paused = false;
+    $("score").textContent = 0;
+    $("go").textContent = "Restart";
+    $("pause").disabled = $("skip").disabled = false;
+    $("pause").textContent = "Pause";
+    show();
+  }
+  function show() {
+    const { w, verb } = list[i];
+    $("cmd").className = "cmd";
+    $("cmd").innerHTML = `${verb} <b>${w.en}</b>!`;
+    $("count").textContent = `${i + 1} / ${list.length}`;
+    if (sound) speak(`${verb} ${w.en}`, .85);
+    left = secs * 1000; t0 = performance.now();
+    tick();
+  }
+  function tick() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(function step(now) {
+      if (paused) return;
+      const rest = Math.min(left, Math.max(0, left - (now - t0)));
+      $("fg").style.strokeDasharray = CIRC;
+      $("fg").style.strokeDashoffset = CIRC * (1 - rest / (secs * 1000));
+      $("num").textContent = Math.ceil(rest / 1000);
+      $("ring").classList.toggle("low", rest <= 3000);
+      if (rest <= 0) { beep(); next(); return; }
+      raf = requestAnimationFrame(step);
+    });
+  }
+  function next() {
+    done++; $("score").textContent = done;
+    i++;
+    if (i >= list.length) { finish(); return; }
+    show();
+  }
+  function finish() {
+    running = false;
+    $("cmd").className = "cmd idle"; $("cmd").textContent = "Well done!";
+    $("pause").disabled = $("skip").disabled = true;
+    $("go").textContent = "Start";
+    showResult({ score: list.length, total: list.length, onAgain: begin, extra: secs === 5 ? "Hard" : "Easy" });
+  }
+
+  $("go").addEventListener("click", begin);
+  $("skip").addEventListener("click", () => { if (running) { paused = false; $("pause").textContent = "Pause"; next(); } });
+  $("pause").addEventListener("click", () => {
+    if (!running) return;
+    paused = !paused;
+    $("pause").textContent = paused ? "Resume" : "Pause";
+    if (paused) { left -= performance.now() - t0; }
+    else { t0 = performance.now(); tick(); }
+  });
+  $("snd").addEventListener("click", () => {
+    sound = !sound;
+    $("snd").textContent = sound ? "🔊 Sound on" : "🔇 Sound off";
+  });
+</script>
+</body>
+</html>

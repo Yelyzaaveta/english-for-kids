@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Body: Match</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .mi .emo { font-size: min(7.5vh, 13vw); line-height: 1.1; display: block; white-space: nowrap; }
+  .mi.pic-item { padding: 4px 6px; }
+  .mi.pic-item .emo svg { height: 1em; width: 1em; max-width: none; aspect-ratio: auto; border-radius: 0; margin: 0 auto; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Body <span class="accent">Match</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task">Match the picture and the word. <span class="ua">Натисни картинку, потім слово.</span></p>
+  <div id="board" style="margin-top:14px"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script src="../assets/body.js"></script>
+<script>
+  heartsGame({
+    hearts: 4,
+    // 15 words -> 3 boards of 5 pictures
+    makeRounds: () => { const a = shuffle(BODY); return [a.slice(0, 5), a.slice(5, 10), a.slice(10, 15)]; },
+    render(group, g) {
+      matchBoard(document.getElementById("board"),
+        group.map(w => ({ left: bodyPic(w), right: w.en, msg: `<b>${w.en}</b> <span class="ua">— ${w.ua}</span>`, say: w.en })),
+        g, { leftCls: "pic-item" });
+    },
+  });
+</script>
+</body>
+</html>

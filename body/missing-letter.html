@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Body: Missing Letters</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .photo.emo { font-size: min(20vh, 36vw); height: auto; aspect-ratio: auto; border: 0; background: none; margin: 0; }
+  .word { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 8px 0 2px; }
+  .ch, .word input {
+    width: clamp(36px, 6.4vh, 54px); height: clamp(46px, 8vh, 66px);
+    display: grid; place-items: center;
+    font: inherit; font-size: clamp(24px, 4.6vh, 38px); font-weight: 800; text-align: center;
+    border-radius: 12px; border: 2px solid var(--card-edge);
+    background: linear-gradient(180deg, var(--card-top), var(--card)); color: var(--text);
+  }
+  .word input { border-color: var(--yellow); color: var(--yellow); outline: none; padding: 0; caret-color: var(--yellow); }
+  .word input:focus { box-shadow: 0 0 0 3px #ffc93c55; }
+  .word input.right { border-color: var(--green); color: var(--green); background: #3ddc8422; }
+  .word input.wrong { border-color: var(--red); color: var(--red); background: #ff5a5f22; }
+  .row { display: flex; align-items: center; gap: 12px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Missing <span class="accent">Letters</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task">Type the missing letters. <span class="ua">Впиши пропущені літери (1–2).</span></p>
+  <div id="pic" style="margin-top:6px"></div>
+  <div class="row">
+    <div class="word" id="word"></div>
+    <button class="snd" id="say" aria-label="Listen" data-icon="sound"></button>
+  </div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script src="../assets/body.js"></script>
+<script>
+  let cur = null;
+  heartsGame({
+    hearts: 4,
+    makeRounds: () => rounds(BODY, 15),
+    render(w, g) {
+      cur = w;
+      document.getElementById("pic").innerHTML = bodyPic(w, "photo");
+      const at = w.en.indexOf(w.gap);
+      const wordEl = document.getElementById("word");
+      wordEl.innerHTML = [...w.en].map((c, i) =>
+        i >= at && i < at + w.gap.length
+          ? `<input maxlength="1" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="missing letter">`
+          : `<span class="ch">${c}</span>`).join("");
+      const inputs = [...wordEl.querySelectorAll("input")];
+      inputs[0].focus();
+      inputs.forEach((inp, k) => {
+        inp.addEventListener("input", () => {
+          const v = inp.value.trim().toLowerCase();
+          if (!/^[a-z]$/.test(v)) { inp.value = ""; return; }
+          inp.value = v;
+          if (k < inputs.length - 1) { inputs[k + 1].focus(); return; }
+          if (g.busy) return;
+          const typed = inputs.map(x => x.value).join("");
+          const msg = `<b>${w.en}</b> <span class="ua">— ${w.ua}</span>`;
+          inputs.forEach(x => x.readOnly = true);
+          if (typed === w.gap) {
+            inputs.forEach(x => x.classList.add("right")); flash(wordEl, "pop");
+            g.right(msg, w.en);
+          } else {
+            inputs.forEach(x => x.classList.add("wrong")); flash(wordEl, "shake");
+            g.wrong(`Not <b>${typed}</b>. ${msg}`, w.en);
+            setTimeout(() => inputs.forEach((x, j) => { x.value = w.gap[j]; x.classList.replace("wrong", "right"); }), 700);
+          }
+        });
+        inp.addEventListener("keydown", e => { if (e.key === "Backspace" && !inp.value && k > 0) inputs[k - 1].focus(); });
+      });
+    },
+  });
+  document.getElementById("say").addEventListener("click", () => cur && speak(cur.en, .75));
+  document.getElementById("word").addEventListener("click", () => document.querySelector("#word input:not([readonly])")?.focus());
+</script>
+</body>
+</html>

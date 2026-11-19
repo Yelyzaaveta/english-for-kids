@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Body: Find the Picture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .pic .emo { font-size: min(9vh, 17vw); white-space: nowrap; }
+  .big { font-size: clamp(40px, 9vh, 76px); font-weight: 800; letter-spacing: 2px; margin: 8px 0 14px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Find the <span class="accent">Picture</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task" id="task"></p>
+  <div id="stage" style="margin-top:10px; display:flex; flex-direction:column; align-items:center; width:100%"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script src="../assets/body.js"></script>
+<script>
+  const stage = document.getElementById("stage"), task = document.getElementById("task");
+  heartsGame({
+    hearts: 4,
+    makeRounds: () => rounds(BODY, 16).map((w, i) => ({ w, mode: i % 2 ? "hear" : "read" })),
+    render({ w, mode }, g) {
+      const opts = optionsFor(w, BODY);
+      const grid = `<div class="pics">${opts.map((o, k) => `<button class="pic" data-k="${k}">${bodyPic(o)}<span class="cap">${o.en}</span></button>`).join("")}</div>`;
+      if (mode === "read") {
+        task.innerHTML = `Read and find the picture. <span class="ua">Прочитай і знайди картинку.</span>`;
+        stage.innerHTML = `<div class="big">${w.en}</div>${grid}`;
+      } else {
+        task.innerHTML = `Listen and find the picture. <span class="ua">Послухай і знайди картинку.</span>`;
+        stage.innerHTML = `<div class="qline"><button class="snd" id="say" aria-label="Listen">🔊</button><span class="txt">Listen! 👂</span></div>${grid}`;
+        stage.querySelector("#say").addEventListener("click", () => speak(w.en, .75));
+        speak(w.en, .75);
+      }
+      const btns = stage.querySelectorAll(".pic");
+      const good = btns[opts.indexOf(w)];
+      btns.forEach(b => b.addEventListener("click", () => {
+        if (g.busy) return;
+        btns.forEach(x => x.disabled = true);
+        good.classList.add("right");
+        const msg = `<b>${w.en}</b> <span class="ua">— ${w.ua}</span>`;
+        if (b === good) { flash(b, "pop"); g.right(msg, w.en); }
+        else { b.classList.add("wrong"); flash(b, "shake"); g.wrong(`It's ${msg}`, w.en); }
+      }));
+    },
+  });
+</script>
+</body>
+</html>

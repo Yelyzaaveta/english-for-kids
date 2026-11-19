@@ -13,6 +13,7 @@ assets/
   common.css            — спільний дизайн (кольори, кнопки, заголовок)
   worksheet.css         — дизайн аркушів А4 для друку
   holidays/             — фото до свят (стиснуті jpg)
+  body.js               — слова про тіло (картинки, переклад, пропущені букви) і тексти про травми для блоку body/
   common.js             — словник за темами, озвучка, вікно результату
   reading.css / .js     — спільне для ігор на читання: підсвічування голосної, правило складу
   house.css / .js       — спільне для блоку house/: слова, гра з сердечками, з'єднування, малюнки меблів
@@ -39,6 +40,13 @@ house/                   — блок «Where is …?» (3 клас). У кож�
   am-is-are-quiz.html   — встав am / is / are в речення
   missing-letter.html   — впиши пропущену букву в нових словах
   in-on-under.html      — 20 завдань: кіт/собака on / under / in (sofa, chair, bed, carpet, box), тест + з'єднай
+body/                    — блок «Parts of the Body» (5 клас), дані й малюнки в assets/body.js
+  body-parts.html       — 3 аркуші А4 для друку в зеленому стилі: слова з картинками, пропущені букви + з'єднування, тексти "hurt his knee" + питання
+  touch-your.html       — "Touch your head!" з відліком: Easy 10 с / Hard 5 с, без підказок (звук можна ввімкнути)
+  match.html            — з'єднай картинку зі словом
+  missing-letter.html   — впиши 1–2 пропущені букви
+  find-picture.html     — слово або звук → знайди картинку
+  hurt-story.html       — текст "Max rode a bike and hurt his knee" → що поранив → впиши пропущені букви
 words/
   picture-match.html    — з'єднай картинку зі словом
   colours.html          — знайди колір

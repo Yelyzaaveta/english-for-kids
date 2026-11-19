@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parts of the Body</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/worksheet.css">
+<style>
+  /* green theme for this block */
+  :root {
+    --p: #2e9e5b; --p-dark: #1d7a43; --p-soft: #e8f7ee; --p-mid: #a5dcb8;
+    --line: #d3eadb; --desk: #e3efe8;
+  }
+  .pic svg, .emo svg { display: inline-block; vertical-align: middle; }
+
+  /* Page 1: word cards */
+  .words { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+  .wc {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 12px; min-height: 40mm; flex-direction: column; justify-content: center; text-align: center;
+    border: 2px solid var(--p-mid); border-radius: 14px; background: #fff;
+  }
+  .wc .pic { font-size: 62px; line-height: 1.05; }
+  .wc .en { font-size: 30px; font-weight: 700; color: var(--p-dark); line-height: 1.1; }
+  .wc .ua { font-size: 12px; }
+  .say {
+    margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .say p {
+    margin: 0; padding: 8px 12px; background: var(--p-soft); border-radius: 12px;
+    font: 400 19px/1.45 "Andika", sans-serif;
+  }
+  .say p b { color: var(--p-dark); }
+
+  /* Page 2 */
+  .gap5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .gc { border: 1.5px solid var(--line); border-radius: 12px; padding: 6px 2px 9px; text-align: center; }
+  .gc .pic { font-size: 40px; line-height: 1.15; }
+  .gc .w { font: 400 25px "Andika", sans-serif; display: flex; justify-content: center; align-items: flex-end; gap: 1px; }
+  .gc .box { width: 20px; height: 28px; margin: 0 1px; }
+  .match.sm .it { height: 54px; }
+  .match .pic { font-size: 44px; line-height: 1; }
+  .match { gap: 0 60mm; }
+
+  /* Page 3 */
+  .vocab { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-bottom: 12px; }
+  .vocab span { padding: 3px 11px; background: var(--p-soft); border-radius: 20px; font: 400 16px "Andika", sans-serif; }
+  .vocab span i { font: 400 12px "Rubik", sans-serif; color: var(--muted); font-style: normal; }
+  .text {
+    padding: 9px 14px; background: var(--p-soft); border-radius: 12px;
+    font: 400 21px/1.5 "Andika", sans-serif; display: flex; gap: 12px; align-items: center;
+  }
+  .text .pic { font-size: 54px; line-height: 1; flex: none; }
+  .qa { margin: 8px 0 0; }
+  .qa div { display: flex; align-items: baseline; gap: 8px; font: 400 19px "Andika", sans-serif; padding: 4px 2px; }
+  .qa div b { font-weight: 700; color: var(--p-dark); white-space: nowrap; }
+  .qa .ln { flex: 1; border-bottom: 1.5px solid var(--p-mid); height: 20px; }
+  .fill { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  .fill li {
+    counter-increment: s; display: flex; align-items: center; gap: 10px;
+    font: 400 21px "Andika", sans-serif; padding: 5px 2px; border-bottom: 1px dashed var(--line);
+  }
+  .fill li::before { content: counter(s) "."; width: 22px; font: 700 14px "Rubik", sans-serif; color: var(--p); }
+  .fill li:last-child { border-bottom: 0; }
+  .fill .box { width: 19px; height: 26px; margin: 0 1px; }
+  .fill .pic { margin-left: auto; font-size: 26px; display: none; }
+  .copy-line { display: flex; align-items: center; gap: 10px; margin: 6px 0 0; font: 400 19px "Andika", sans-serif; }
+  .copy-line .ln { flex: 1; border-bottom: 1.5px solid var(--p-mid); height: 22px; }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a href="../index.html">← На головну</a>
+  <button onclick="window.print()">Друкувати / зберегти PDF</button>
+  <span class="hint">У вікні друку: A4, поля «Немає», увімкнути «Фонова графіка»</span>
+</div>
+
+<!-- ================= PAGE 1: words ================= -->
+<section class="page">
+  <div class="head"><b>Parts of the Body</b><span class="name">Ім'я: <span></span></span></div>
+  <h1>Parts of the Body <span class="tag">частини тіла</span></h1>
+  <p class="lead">Прочитай слова вголос. Скажи, що це, і покажи на собі.</p>
+
+  <div class="words" id="words"></div>
+
+  <div class="say">
+    <p><b>Touch</b> your head!<br><b>Show</b> me your hand.<br><b>Point</b> to your nose.</p>
+    <p>One <b>foot</b> – two <b>feet</b>.<br>One <b>tooth</b> – two <b>teeth</b>.<br>One <b>toe</b> – ten <b>toes</b>.</p>
+  </div>
+
+  <div class="foot"><span>Parts of the Body</span><span class="num">1</span></div>
+</section>
+
+<!-- ================= PAGE 2: letters + matching ================= -->
+<section class="page">
+  <div class="head"><b>Parts of the Body</b><span class="name">Ім'я: <span></span></span></div>
+  <h1>Вправи <span class="tag">exercises</span></h1>
+  <p class="lead">Подивись на картинку й допиши пропущені букви.</p>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">1</span> Write the missing letters <small>впиши пропущені літери</small></div>
+    <div class="gap5" id="gaps"></div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">2</span> Match the picture and the word <small>з'єднай картинку зі словом</small></div>
+    <div class="match sm" id="match"></div>
+  </div>
+
+  <div class="foot"><span>Parts of the Body</span><span class="num">2</span></div>
+</section>
+
+<!-- ================= PAGE 3: reading ================= -->
+<section class="page">
+  <div class="head"><b>Parts of the Body</b><span class="name">Ім'я: <span></span></span></div>
+  <h1>Ouch! <span class="tag">читаємо</span></h1>
+
+  <div class="vocab">
+    <span>hurt <i>– поранив(ся)</i></span><span>rode <i>– їхав</i></span><span>fell <i>– впав</i></span>
+    <span>bike <i>– велосипед</i></span><span>scooter <i>– самокат</i></span><span>tree <i>– дерево</i></span>
+    <span>door <i>– двері</i></span><span>Ouch! <i>– Ой!</i></span>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">3</span> Read and answer <small>прочитай і дай відповідь</small></div>
+
+    <div class="text"><span class="pic" id="pBike"></span>
+      <span>Max rode a bike in the park. He fell and hurt his knee. “Ouch!” said Max.</span></div>
+    <div class="qa">
+      <div><b>What did Max ride?</b> <span class="en">He rode a</span><span class="ln"></span></div>
+      <div><b>What did Max hurt?</b> <span class="en">He hurt his</span><span class="ln"></span></div>
+    </div>
+
+    <div class="text" style="margin-top:12px"><span class="pic" id="pScooter"></span>
+      <span>Oleg rode a scooter. He fell and hurt his arm and his hand. “Ouch!” said Oleg.</span></div>
+    <div class="qa">
+      <div><b>What did Oleg ride?</b> <span class="en">He rode a</span><span class="ln"></span></div>
+      <div><b>What did Oleg hurt?</b> <span class="en">He hurt his</span><span class="ln"></span></div>
+    </div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">4</span> Write the missing letters <small>впиши пропущені літери (1–2)</small></div>
+    <ol class="fill" id="fill"></ol>
+  </div>
+
+  <div class="ex">
+    <div class="ex-title"><span class="n">5</span> Write about you <small>напиши про себе</small></div>
+    <div class="copy-line"><span>I ride a</span><span class="ln"></span><span>.</span></div>
+    <div class="copy-line"><span>I hurt my</span><span class="ln"></span><span>.</span></div>
+  </div>
+
+  <div class="foot"><span>Parts of the Body</span><span class="num">3</span></div>
+</section>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/body.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const boxes = n => '<span class="box"></span>'.repeat(n);
+  // "k" + 2 boxes + "e"
+  const holeHTML = w => { const i = w.en.indexOf(w.gap); return w.en.slice(0, i) + boxes(w.gap.length) + w.en.slice(i + w.gap.length); };
+
+  // Page 1
+  $("words").innerHTML = BODY.map(w =>
+    `<div class="wc"><span class="pic">${w.emoji}</span><span class="en">${w.en}</span><span class="ua">${w.ua}</span></div>`).join("");
+
+  // Page 2
+  $("gaps").innerHTML = BODY.map(w =>
+    `<div class="gc"><div class="pic">${w.emoji}</div><div class="w en">${holeHTML(w)}</div></div>`).join("");
+
+  const left = ["head", "hand", "nose", "ear", "foot", "mouth", "knee", "hair"];
+  const right = ["nose", "hair", "foot", "head", "knee", "ear", "mouth", "hand"];
+  $("match").innerHTML = left.map((l, i) =>
+    `<div class="it left"><span class="pic">${bodyWord(l).emoji}</span><span class="dot"></span></div>
+     <div class="it"><span class="dot"></span><span class="word">${right[i]}</span></div>`).join("");
+
+  // Page 3
+  $("pBike").innerHTML = "🚲";
+  $("pScooter").innerHTML = "🛴";
+  const pickS = [0, 2, 4, 3, 5, 10, 1, 7];
+  $("fill").innerHTML = pickS.map(k => {
+    const s = STORIES[k], w = bodyWord(s.part);
+    return `<li><span>${s.text.replace(` ${s.part}.`, ` ${holeHTML(w)}.`)}</span></li>`;
+  }).join("");
+</script>
+</body>
+</html>
