@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Build the Word</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .photo { height: min(30vh, 56vw); }
+  .photo.emo { font-size: min(18vh, 32vw); }
+  .ua-line { font-size: clamp(16px, 2.8vh, 22px); margin: -4px 0 6px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Build the <span class="accent">Word</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task" id="task"></p>
+  <div id="stage" style="margin-top:10px; display:flex; flex-direction:column; align-items:center; width:100%"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+
+  const stage = document.getElementById("stage"), task = document.getElementById("task");
+  const POOL = ALL_WORDS.filter(w => w.en.replace(" ", "").length <= 9);
+
+  function scramble(letters) {
+    let t, n = 0;
+    do { t = shuffle(letters); } while (t.join("") === letters.join("") && letters.length > 1 && ++n < 10);
+    return t;
+  }
+
+  heartsGame({
+    hearts: 4,
+    makeRounds: () => shuffle(POOL).slice(0, 14),
+    render(w, g) {
+      task.innerHTML = `Tap the letters in the right order. <span class="ua">Збери слово з букв.</span>`;
+      const letters = [...w.en].filter(c => c !== " ");
+      stage.innerHTML = `${wordPic(w, "photo")}
+        <div class="ua-line ua">${w.ua}</div>
+        <div class="slots" id="slots">${[...w.en].map(c => c === " " ? `<span class="slot sp"></span>` : `<span class="slot"></span>`).join("")}</div>
+        <div class="tiles" id="tiles">${scramble(letters).map(c => `<button class="tile" data-c="${c}">${c}</button>`).join("")}</div>`;
+      const slots = [...stage.querySelectorAll(".slot:not(.sp)")];
+      let pos = 0, bad = false;
+      const msg = `<b>${w.en}</b> <span class="ua">— ${w.ua}</span>`;
+      stage.querySelectorAll(".tile").forEach(t => t.addEventListener("click", () => {
+        if (g.busy || t.classList.contains("used")) return;
+        if (t.dataset.c === letters[pos]) {
+          t.classList.add("used");
+          slots[pos].textContent = t.dataset.c; slots[pos].classList.add("on");
+          pos++;
+          if (pos === letters.length) {
+            speak(w.en, .8);
+            if (bad) { g.done(1500); ex(`${msg}`); } else { g.right(msg, w.en); }
+          }
+        } else {
+          flash(t, "shake"); t.classList.add("wrong"); setTimeout(() => t.classList.remove("wrong"), 450);
+          if (!bad) { bad = true; g.wrong("Спробуй ще 🙂", null, { stay: true }); }
+        }
+      }));
+      function ex(m) { document.getElementById("explain").innerHTML = `<span class="ok">✅ ${m}</span>`; }
+    },
+  });
+
+</script>
+</body>
+</html>

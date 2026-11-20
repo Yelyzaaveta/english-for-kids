@@ -51,6 +51,18 @@ const EXTRA_WORDS = [
   { en: "camp",    ua: "табір", img: "camp.jpg" },
   { en: "village", ua: "село",  img: "village.jpg" },
 ];
+// Photos from the workbook (things in places) - used by the typing / memory / build-the-word games
+const THINGS = [
+  { en: "cat",       ua: "кіт",         img: "wb-cat.jpg" },
+  { en: "dog",       ua: "собака",      img: "wb-dog.jpg" },
+  { en: "bike",      ua: "велосипед",   img: "wb-bike.jpg" },
+  { en: "balls",     ua: "м'ячі",       img: "wb-balls.jpg" },
+  { en: "books",     ua: "книги",       img: "wb-books.jpg" },
+  { en: "caps",      ua: "кепки",       img: "wb-caps.jpg" },
+  { en: "pens",      ua: "ручки",       img: "wb-pens.jpg" },
+  { en: "cows",      ua: "корови",      img: "wb-cows.jpg" },
+  { en: "quad bike", ua: "квадроцикл",  img: "wb-quad.jpg" },
+];
 // Pictures that show more than one word (the living room photo has a sofa, a carpet and a chair...).
 // Such words are never offered together, so there is always exactly one right answer.
 const CLASH = {
@@ -74,7 +86,7 @@ function optionsFor(target, pool, n = 3) {
 // Picture of a word: a photo or a big emoji
 function wordPic(w, cls = "") {
   return w.img
-    ? `<img class="${cls}" src="${IMG}${w.img}" alt="">`
+    ? `<img class="${cls}${w.img.startsWith("wb-") ? " fit" : ""}" src="${IMG}${w.img}" alt="">`
     : `<span class="emo ${cls}">${w.emoji}</span>`;
 }
 
@@ -285,3 +297,6 @@ for (const animal of Object.keys(ANIMALS))
   for (const furn of Object.keys(SPOTS))
     for (const prep of Object.keys(SPOTS[furn])) SCENES.push({ animal, prep, furn });
 const sceneText = s => `The ${s.animal} is ${s.prep} the ${s.furn}.`;
+
+// every word of the topic, with a picture
+const ALL_WORDS = [...WORDS, ...EXTRA_WORDS, ...THINGS];

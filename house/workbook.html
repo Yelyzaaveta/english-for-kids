@@ -25,7 +25,7 @@
   .foot .num { background: var(--p-dark); color: #fff; }
   .ex-title .n { background: var(--p-dark); }
   .ex-title { font-size: 16px; }
-  .photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photo { width: 100%; height: 100%; object-fit: contain; display: block; background: var(--p-soft); }
   .blank { display: inline-block; min-width: 20mm; height: 1.15em; border-bottom: 2px solid var(--p); vertical-align: bottom; margin: 0 2px; }
   .blank.s { min-width: 12mm; } .blank.l { min-width: 38mm; }
   .box { border-color: var(--p-mid); }
@@ -38,13 +38,13 @@
   .bank.big span { font-size: 21px; }
 
   /* Page 1 */
-  .wgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px 8px; }
+  .wgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px 7px; }
   .wcard { border: 2px solid var(--p-mid); border-radius: 14px; overflow: hidden; background: #fff; text-align: center; }
   .wcard .im, .gc .im { position: relative; overflow: hidden; }
   .wcard .im .photo, .gc .im .photo { position: absolute; inset: 0; }
-  .wcard .im { height: 34mm; background: var(--p-soft); display: grid; place-items: center; }
-  .wcard .im .emo { font-size: 62px; line-height: 1; }
-  .wcard .en { font: 700 26px/1.1 "Andika", sans-serif; color: var(--p-dark); padding-top: 4px; }
+  .wcard .im { height: 48mm; background: var(--p-soft); display: grid; place-items: center; }
+  .wcard .im .emo { font-size: 54px; line-height: 1; }
+  .wcard .en { font: 700 21px/1.1 "Andika", sans-serif; color: var(--p-dark); padding-top: 4px; }
   .wcard .ua { padding-bottom: 5px; }
   .more { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; margin-top: 9px; }
   .more div { text-align: center; padding: 6px 2px 5px; background: var(--p-dark); color: #fff; border-radius: 12px; }
@@ -68,6 +68,13 @@
   .readaloud p b { color: #d9c9ff; }
 
   /* Pages 3 + 4 */
+  .pics4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3.5mm; margin-bottom: 8mm; }
+  .pics4 .pb { height: 74mm; border: 2px solid var(--p-mid); border-radius: 12px; overflow: hidden; background: var(--p-soft); }
+  .qlist { display: grid; gap: 4mm; }
+  .qrow { display: grid; grid-template-columns: 30px 1fr; gap: 3mm; align-items: start; padding: 3mm 4mm; border: 2px solid var(--line); border-radius: 14px; }
+  .qrow .no { width: 26px; height: 26px; border-radius: 8px; margin-top: 3px; background: var(--p-dark); color: #fff; display: grid; place-items: center; font: 700 15px "Rubik", sans-serif; }
+  .qrow .q { font: 700 24px/1.2 "Andika", sans-serif; color: var(--p-dark); }
+  .qrow .a { font: 400 26px/1.6 "Andika", sans-serif; margin-top: 1mm; }
   .wh { display: grid; grid-template-columns: 62mm 1fr; gap: 6mm; align-items: center;
     padding: 3mm; margin-bottom: 3mm; border: 2px solid var(--line); border-radius: 14px; }
   .wh .ph { height: 46mm; border-radius: 10px; overflow: hidden; position: relative; }
@@ -79,7 +86,7 @@
   /* Page 5 */
   .who { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5mm; }
   .who > div { border: 2px solid var(--line); border-radius: 14px; padding: 3mm; }
-  .who .ph { height: 38mm; border-radius: 10px; overflow: hidden; position: relative; }
+  .who .ph { height: 41mm; border-radius: 10px; overflow: hidden; position: relative; }
   .who .no { position: absolute; left: 6px; top: 6px; width: 26px; height: 26px; border-radius: 8px; z-index: 2;
     background: var(--p-dark); color: #fff; display: grid; place-items: center; font: 700 15px "Rubik", sans-serif; }
   .who .q { font: 700 21px/1.2 "Andika", sans-serif; color: var(--p-dark); margin-top: 2.5mm; }
@@ -96,33 +103,33 @@
   .m2 .word { font: 400 24px "Andika", sans-serif; }
 
   /* Page 7: letters */
-  .gap4 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .gap4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
   .gc { border: 2px solid var(--line); border-radius: 14px; overflow: hidden; text-align: center; padding-bottom: 8px; }
-  .gc .im { height: 30mm; background: var(--p-soft); display: grid; place-items: center; margin-bottom: 6px; }
-  .gc .im .emo { font-size: 52px; line-height: 1; }
-  .gc .w { font: 400 27px "Andika", sans-serif; display: flex; justify-content: center; align-items: flex-end; flex-wrap: wrap; letter-spacing: 1px; }
-  .gc .box { width: 21px; height: 30px; margin: 0 2px; background: var(--p-soft); border-width: 2px; }
+  .gc .im { height: 40mm; background: var(--p-soft); display: grid; place-items: center; margin-bottom: 6px; }
+  .gc .im .emo { font-size: 46px; line-height: 1; }
+  .gc .w { font: 400 21px "Andika", sans-serif; display: flex; justify-content: center; align-items: flex-end; flex-wrap: wrap; letter-spacing: 1px; }
+  .gc .box { width: 17px; height: 25px; margin: 0 1px; background: var(--p-soft); border-width: 2px; }
   .copy3 { font: 400 22px "Andika", sans-serif; display: grid; gap: 4px; }
   .copy3 div { display: flex; gap: 10px; align-items: flex-end; }
   .copy3 .blank { flex: 1; height: 1.5em; }
 
   /* Page 8 */
   .circ2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
-  .circ2 > div { display: grid; grid-template-columns: 34mm 1fr; gap: 3mm; align-items: center;
+  .circ2 > div { display: grid; grid-template-columns: 30mm 1fr; gap: 3mm; align-items: center;
     border: 2px solid var(--line); border-radius: 14px; padding: 2.5mm; }
-  .circ2 .ph { height: 25mm; border-radius: 9px; overflow: hidden; position: relative; }
+  .circ2 .ph { height: 40mm; border-radius: 9px; overflow: hidden; position: relative; }
   .circ2 .s { font: 400 20px/1.3 "Andika", sans-serif; }
   .circ2 .o { display: flex; gap: 8px; margin-top: 4px; font: 700 18px "Andika", sans-serif; color: var(--p-dark); }
   .circ2 .o span { padding: 0 8px; border: 1.5px dashed var(--p-mid); border-radius: 20px; }
   .draw3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .draw3 > div { border: 2px solid var(--line); border-radius: 14px; overflow: hidden; }
   .draw3 .s { font: 700 19px/1.25 "Andika", sans-serif; color: #fff; background: var(--p-dark); padding: 6px 10px; min-height: 17mm; display: flex; align-items: center; }
-  .draw3 .sq { height: 80mm; }
+  .draw3 .sq { height: 52mm; }
 
   /* Page 9 */
   .story { display: grid; grid-template-columns: 52mm 1fr; gap: 6mm; align-items: center;
     padding: 4mm; border-radius: 14px; background: var(--p-soft); border: 2px solid var(--p-mid); margin-bottom: 11px; }
-  .story .ph { height: 62mm; border-radius: 10px; overflow: hidden; }
+  .story .ph { height: 66mm; border-radius: 10px; overflow: hidden; }
   .story p { margin: 0; font: 400 24px/1.55 "Andika", sans-serif; }
   .story p b { color: var(--p-dark); }
   .tf { list-style: none; margin: 0; padding: 0; counter-reset: t; }
@@ -258,18 +265,19 @@
        <p>The cat is <b>on</b> the carpet.</p>
      </div>`));
 
-  // ===== 3. Where are ...? (1) =====
+  // ===== 3 + 4. Where is it? 4 photos on top, the questions below (the child finds the thing himself) =====
   const bankPlaces = (list) => `<div class="bank big"><b>in · on · under</b>${list.map(x => `<span>${x[0]}<i>${x[1]}</i></span>`).join("")}</div>`;
-  pages.push(page(3, "Where is it?", "де це?", "",
-    `<div class="ex">${exTitle(1, "Look and write: in, on or under + the place", "подивись і впиши: in, on або under + місце")}
-      ${bankPlaces([["bathroom", "ванна кімната"], ["kitchen", "кухня"], ["carpet", "килим"], ["bed", "ліжко"]])}
-      ${["balls", "bike", "caps", "books"].map((k, i) => whRow(k, i + 1)).join("")}</div>`));
-
-  // ===== 4. Where are ...? (2) =====
-  pages.push(page(4, "Where is it?", "де це?", "",
-    `<div class="ex">${exTitle(2, "Look and write: in, on or under + the place", "подивись і впиши: in, on або under + місце")}
-      ${bankPlaces([["box", "коробка"], ["village", "село"], ["sofa", "диван"], ["road", "дорога"]])}
-      ${["pens", "cows", "cat", "quad"].map((k, i) => whRow(k, i + 1)).join("")}</div>`));
+  const whPage = (n, exN, photos, order, bank) => page(n, "Where is it?", "де це?", "",
+    `<div class="ex">${exTitle(exN, "Find it. Write in, on or under + place", "знайди на картинках і впиши")}
+      <div class="pics4">${photos.map(k => `<div class="pb">${ph(P[k].f)}</div>`).join("")}</div>
+      ${bankPlaces(bank)}
+      <div class="qlist">${order.map((k, i) => `<div class="qrow"><span class="no">${i + 1}</span><div>
+        <div class="q">${P[k].q}</div>
+        <div class="a">${P[k].s} ${blank("s")} the ${blank()}.</div></div></div>`).join("")}</div></div>`);
+  pages.push(whPage(3, 1, ["balls", "bike", "caps", "books"], ["bike", "books", "balls", "caps"],
+    [["bathroom", "ванна кімната"], ["kitchen", "кухня"], ["carpet", "килим"], ["bed", "ліжко"]]));
+  pages.push(whPage(4, 2, ["pens", "cows", "cat", "quad"], ["cat", "quad", "pens", "cows"],
+    [["box", "коробка"], ["village", "село"], ["sofa", "диван"], ["road", "дорога"]]));
 
   // ===== 5. Who / what is ...? =====
   const WHO = [

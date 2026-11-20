@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Build the Sentence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .photo { height: min(30vh, 56vw); }
+  .photo.emo { font-size: min(18vh, 32vw); }
+  .ua-line { font-size: clamp(16px, 2.8vh, 22px); margin: -4px 0 6px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Build the <span class="accent">Sentence</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task" id="task"></p>
+  <div id="stage" style="margin-top:10px; display:flex; flex-direction:column; align-items:center; width:100%"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+
+  const stage = document.getElementById("stage"), task = document.getElementById("task");
+
+  heartsGame({
+    hearts: 4,
+    makeRounds: () => shuffle(SCENES).slice(0, 12),
+    render(s, g) {
+      task.innerHTML = `Look and build the sentence. <span class="ua">Подивись і збери речення.</span>`;
+      const words = sceneText(s).split(" ");
+      let tiles;
+      do { tiles = shuffle(words); } while (tiles.join(" ") === words.join(" "));
+      stage.innerHTML = `<div class="scene">${sceneSVG(s)}</div>
+        <div class="slots words" id="slots">${words.map(() => `<span class="slot"></span>`).join("")}</div>
+        <div class="tiles words" id="tiles">${tiles.map(t => `<button class="tile" data-w="${t}">${t}</button>`).join("")}</div>`;
+      const slots = [...stage.querySelectorAll(".slot")];
+      let pos = 0, bad = false;
+      const text = sceneText(s);
+      stage.querySelectorAll(".tile").forEach(t => t.addEventListener("click", () => {
+        if (g.busy || t.classList.contains("used")) return;
+        if (t.dataset.w === words[pos]) {
+          t.classList.add("used");
+          slots[pos].textContent = t.dataset.w; slots[pos].classList.add("on");
+          pos++;
+          if (pos === words.length) {
+            if (bad) { document.getElementById("explain").innerHTML = `<span class="ok">✅ ${text}</span>`; speak(text); g.done(1800); }
+            else g.right(text, text);
+          }
+        } else {
+          flash(t, "shake"); t.classList.add("wrong"); setTimeout(() => t.classList.remove("wrong"), 450);
+          if (!bad) { bad = true; g.wrong("Спробуй ще 🙂", null, { stay: true }); }
+        }
+      }));
+    },
+  });
+
+</script>
+</body>
+</html>

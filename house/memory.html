@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Memory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .photo { height: min(30vh, 56vw); }
+  .photo.emo { font-size: min(18vh, 32vw); }
+  .ua-line { font-size: clamp(16px, 2.8vh, 22px); margin: -4px 0 6px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1><span class="accent">Memory</span> Match</h1>
+</header>
+
+<main>
+  <p class="task">Find the picture and its word. <span class="ua">Знайди пари: картинка і слово.</span></p>
+  <div id="info" class="hintline" style="letter-spacing:0; margin-top:6px"></div>
+  <div class="memgrid" id="grid"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+  const grid = document.getElementById("grid"), info = document.getElementById("info");
+  const PAIRS = 6;
+  const POOL = ALL_WORDS.filter(w => w.img);
+  let first = null, lock = false, moves, found;
+
+  function start() {
+    document.querySelector(".result")?.classList.remove("show");
+    // 6 words, none that share a picture (the living room photo also shows a sofa)
+    const picked = [];
+    for (const w of shuffle(POOL)) if (picked.length < PAIRS && picked.every(p => !clash(p, w))) picked.push(w);
+    const cards = shuffle(picked.flatMap(w => [{ w, kind: "pic" }, { w, kind: "word" }]));
+    grid.innerHTML = cards.map((c, i) => `<button class="mc" data-i="${i}" aria-label="card">
+        <span class="face back">?</span>
+        <span class="face front">${c.kind === "pic" ? `<img src="${IMG}${c.w.img}" alt="">` : `<span>${c.w.en}<small>${c.w.ua}</small></span>`}</span></button>`).join("");
+    moves = 0; found = 0; first = null; lock = false; update();
+    grid.querySelectorAll(".mc").forEach(b => b.addEventListener("click", () => flip(b, cards[+b.dataset.i])));
+  }
+  const update = () => info.innerHTML = `Ходи: <b>${moves}</b> &nbsp;·&nbsp; Знайдено: <b>${found}</b> / ${PAIRS}`;
+
+  function flip(b, c) {
+    if (lock || b.classList.contains("open") || b.classList.contains("done")) return;
+    b.classList.add("open");
+    if (c.kind === "word") speak(c.w.en, .8);
+    if (!first) { first = { b, c }; return; }
+    moves++;
+    const a = first; first = null;
+    if (a.c.w === c.w) {
+      [a.b, b].forEach(x => { x.classList.add("done"); flash(x, "pop"); });
+      found++; update(); speak(c.w.en, .8);
+      if (found === PAIRS) setTimeout(() => showResult({ score: PAIRS, total: Math.max(moves, PAIRS), onAgain: start, extra: `ходів: ${moves}` }), 900);
+    } else {
+      lock = true; update();
+      [a.b, b].forEach(x => x.classList.add("bad"));
+      setTimeout(() => { [a.b, b].forEach(x => x.classList.remove("open", "bad")); lock = false; }, 1100);
+    }
+  }
+  document.getElementById("restart").addEventListener("click", start);
+  start();
+
+</script>
+</body>
+</html>

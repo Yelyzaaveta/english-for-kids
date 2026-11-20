@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Type It</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .photo { height: min(30vh, 56vw); }
+  .photo.emo { font-size: min(18vh, 32vw); }
+  .ua-line { font-size: clamp(16px, 2.8vh, 22px); margin: -4px 0 6px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Type <span class="accent">It</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task" id="task"></p>
+  <div id="stage" style="margin-top:10px; display:flex; flex-direction:column; align-items:center; width:100%"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+
+  const stage = document.getElementById("stage"), task = document.getElementById("task");
+
+  heartsGame({
+    hearts: 4,
+    makeRounds: () => shuffle(ALL_WORDS).slice(0, 14).map((w, i) => ({ w, mode: i % 2 ? "hear" : "look" })),
+    render({ w, mode }, g) {
+      const hint = [...w.en].map((c, i) => i === 0 ? `<b>${c.toUpperCase()}</b>` : c === " " ? "&nbsp;&nbsp;" : "_").join(" ");
+      if (mode === "look") {
+        task.innerHTML = `Look and type the word. <span class="ua">Подивись і напиши слово. Потім ✓</span>`;
+        stage.innerHTML = `${wordPic(w, "photo")}<div class="ua-line ua">${w.ua}</div>`;
+      } else {
+        task.innerHTML = `Listen and type the word. <span class="ua">Послухай і напиши слово.</span>`;
+        stage.innerHTML = `<div class="qline"><button class="snd" id="say" aria-label="Listen">🔊</button><span class="txt">Listen! 👂</span></div>`;
+      }
+      stage.insertAdjacentHTML("beforeend", `<div class="hintline">${hint}</div>
+        <div class="typerow"><input class="typein" id="inp" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="word">
+        <button class="snd" id="say2" aria-label="Listen">🔊</button><button class="btn green" id="ok" style="padding:10px 16px">✓</button></div>`);
+      const inp = stage.querySelector("#inp");
+      const say = () => speak(w.en, .75);
+      stage.querySelector("#say")?.addEventListener("click", say);
+      stage.querySelector("#say2").addEventListener("click", say);
+      if (mode === "hear") say();
+      inp.focus();
+      const check = () => {
+        if (g.busy) return;
+        const v = inp.value.trim().toLowerCase().replace(/\s+/g, " ");
+        if (!v) return;
+        inp.readOnly = true;
+        const msg = `<b>${w.en}</b> <span class="ua">— ${w.ua}</span>`;
+        if (v === w.en) { inp.classList.add("right"); flash(inp, "pop"); g.right(msg, w.en); }
+        else {
+          inp.classList.add("wrong"); flash(inp, "shake");
+          g.wrong(`Не <b>${v}</b>. ${msg}`, w.en);
+          setTimeout(() => { inp.value = w.en; inp.classList.replace("wrong", "right"); }, 700);
+        }
+      };
+      inp.addEventListener("keydown", e => { if (e.key === "Enter") check(); });
+      stage.querySelector("#ok").addEventListener("click", check);
+    },
+  });
+
+</script>
+</body>
+</html>

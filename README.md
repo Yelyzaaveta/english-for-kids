@@ -41,6 +41,11 @@ house/                   — блок «Where is …?» (3 клас). У кож�
   missing-letter.html   — впиши пропущену букву в нових словах
   in-on-under.html      — 20 завдань: кіт/собака on / under / in (sofa, chair, bed, carpet, box), тест + з'єднай
   workbook.html         — воркбук: 10 аркушів А4 для друку в темно-фіолетовому стилі: слова, in/on/under, "Where are the balls?", "Who sits on the sofa?", з'єднай з перекладом, пропущені букви, обведи + намалюй, текст Yes/No, філворд (фото wb-*.jpg в assets/house/)
+  memory.html           — Memory: перевертай картки, шукай пари "фото — слово"
+  build-word.html       — збери слово з букв за картинкою
+  build-sentence.html   — збери речення зі слів за малюнком ("The cat is on the sofa.")
+  type-it.html          — надрукуй слово за картинкою або на слух
+  put-it.html           — перетягни кота / собаку / м'яч / книгу: "Put the ball under the chair."
 body/                    — блок «Parts of the Body» (5 клас), дані й малюнки в assets/body.js
   body-parts.html       — 3 аркуші А4 для друку в зеленому стилі: слова з картинками, пропущені букви + з'єднування, тексти "hurt his knee" + питання
   touch-your.html       — "Touch your head!" з відліком: Easy 10 с / Hard 5 с, без підказок (звук можна ввімкнути)

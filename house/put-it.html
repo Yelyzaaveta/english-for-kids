@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Put It There</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<style>
+  .photo { height: min(30vh, 56vw); }
+  .photo.emo { font-size: min(18vh, 32vw); }
+  .ua-line { font-size: clamp(16px, 2.8vh, 22px); margin: -4px 0 6px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Put It <span class="accent">There</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task" id="task"></p>
+  <div id="stage" style="margin-top:10px; display:flex; flex-direction:column; align-items:center; width:100%"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script>
+  const stage = document.getElementById("stage"), task = document.getElementById("task");
+  const THING = {
+    cat:  { emoji: "🐱", ua: "кота" },
+    dog:  { emoji: "🐶", ua: "собаку" },
+    ball: { emoji: "⚽", ua: "м'яч" },
+    book: { emoji: "📕", ua: "книгу" },
+  };
+  const PREP_UA = { in: "в", on: "на", under: "під" };
+  const FURN_UA = { chair: "стілець", sofa: "диван", bed: "ліжко", carpet: "килим", box: "коробку" };
+
+  function scene(furn, prep, thing, placed) {
+    const [x, y] = SPOTS[furn][prep];
+    const t = placed ? `<text x="${x}" y="${y}" font-size="${prep === "under" ? 30 : 34}" text-anchor="middle">${THING[thing].emoji}</text>` : "";
+    let body;
+    if (furn === "box") body = placed && prep === "on" ? FURN_SVG.boxClosed + t : FURN_SVG.boxBack + (placed && prep === "in" ? t : "") + FURN_SVG.boxFront;
+    else body = FURN_SVG[furn] + t;
+    return `<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" id="sc">
+      <rect width="200" height="125" fill="#2a3d5c"/><rect y="125" width="200" height="15" fill="#1b2638"/>${body}</svg>`;
+  }
+
+  const COMBOS = [];
+  for (const thing of Object.keys(THING)) for (const furn of Object.keys(SPOTS)) for (const prep of Object.keys(SPOTS[furn]))
+    COMBOS.push({ thing, furn, prep });
+
+  heartsGame({
+    hearts: 5,
+    makeRounds: () => shuffle(COMBOS).slice(0, 12),
+    render(r, g) {
+      const { thing, furn, prep } = r;
+      const cmd = `Put the ${thing} ${prep} the ${furn}.`;
+      task.innerHTML = `<span class="cmd">Put the <b>${thing}</b> <b>${prep}</b> the <b>${furn}</b>.</span>
+        <button class="snd" id="say" aria-label="Listen" style="width:34px;height:34px;vertical-align:middle;margin-left:6px">🔊</button><br>
+        <span class="ua">Перетягни: ${THING[thing].ua} ${PREP_UA[prep]} ${FURN_UA[furn]}.</span>`;
+      stage.innerHTML = `<div class="scene" id="sceneBox">${scene(furn, prep, thing, false)}</div>
+        <div class="tray"><span class="drag wiggle" id="drag">${THING[thing].emoji}</span></div>`;
+      document.getElementById("say").addEventListener("click", () => speak(cmd, .8));
+      speak(cmd, .8);
+
+      const el = document.getElementById("drag");
+      function finish(ok, got) {
+        el.parentElement.innerHTML = "";
+        document.getElementById("sceneBox").innerHTML = scene(furn, prep, thing, true);
+        if (ok) g.right(cmd.replace("Put", "<b>✔</b> Put"), cmd);
+        else g.wrong(`Правильно: <b>The ${thing} is ${prep} the ${furn}.</b>`, null);
+      }
+      function drop(e) {
+        const box = document.getElementById("sc").getBoundingClientRect();
+        const sx = (e.clientX - box.left) / box.width * 200, sy = (e.clientY - box.top) / box.height * 140;
+        if (sx < 0 || sx > 200 || sy < 0 || sy > 140) return;               // dropped outside the picture: nothing happens
+        let best = null;
+        for (const [p, [x, y]] of Object.entries(SPOTS[furn])) {
+          const d = Math.hypot(sx - x, sy - (y - 12));
+          if (!best || d < best.d) best = { p, d };
+        }
+        if (best.d > 55) return;                                              // too far from any place: try again
+        finish(best.p === prep, best.p);
+      }
+      el.addEventListener("pointerdown", e => {
+        if (g.busy) return;
+        e.preventDefault();
+        el.classList.remove("wiggle"); el.classList.add("dragging");
+        const move = ev => { el.style.left = ev.clientX + "px"; el.style.top = ev.clientY + "px"; };
+        move(e);
+        const up = ev => {
+          removeEventListener("pointermove", move); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
+          el.classList.remove("dragging"); el.style.left = el.style.top = ""; el.classList.add("wiggle");
+          if (ev.type === "pointerup") drop(ev);
+        };
+        addEventListener("pointermove", move); addEventListener("pointerup", up); addEventListener("pointercancel", up);
+      });
+    },
+  });
+
+</script>
+</body>
+</html>
