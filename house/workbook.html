@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My House — Workbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/worksheet.css">
+<style>
+  /* dark purple theme for this workbook */
+  :root {
+    --ink: #241640;
+    --p: #5b34a8; --p-dark: #2f1a63; --p-soft: #f0eafa; --p-mid: #b4a0e0;
+    --line: #d6cbee; --muted: #7b6f99; --desk: #d8d1e8;
+  }
+  h1 { color: var(--p-dark); }
+  .head {
+    background: var(--p-dark); color: #e6ddf8; border: 0; border-radius: 10px;
+    padding: 7px 14px; margin-bottom: 11px;
+  }
+  .head b { color: #fff; }
+  .head .name span { border-bottom-color: rgba(255,255,255,.55); }
+  .foot .num { background: var(--p-dark); color: #fff; }
+  .ex-title .n { background: var(--p-dark); }
+  .ex-title { font-size: 16px; }
+  .photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .blank { display: inline-block; min-width: 20mm; height: 1.15em; border-bottom: 2px solid var(--p); vertical-align: bottom; margin: 0 2px; }
+  .blank.s { min-width: 12mm; } .blank.l { min-width: 38mm; }
+  .box { border-color: var(--p-mid); }
+  .bank { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-bottom: 9px;
+    padding: 6px 10px; background: var(--p-soft); border: 1.5px dashed var(--p-mid); border-radius: 12px; }
+  .bank > b { font: 700 11px "Rubik", sans-serif; color: var(--p-dark); letter-spacing: .6px; text-transform: uppercase; margin-right: 4px; }
+  .bank span { padding: 2px 11px; background: #fff; border: 1.5px solid var(--p-mid); border-radius: 20px;
+    font: 700 18px "Andika", sans-serif; color: var(--p-dark); }
+  .bank span i { font: 400 11px "Rubik", sans-serif; color: var(--muted); font-style: normal; margin-left: 3px; }
+  .bank.big span { font-size: 21px; }
+
+  /* Page 1 */
+  .wgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px 8px; }
+  .wcard { border: 2px solid var(--p-mid); border-radius: 14px; overflow: hidden; background: #fff; text-align: center; }
+  .wcard .im, .gc .im { position: relative; overflow: hidden; }
+  .wcard .im .photo, .gc .im .photo { position: absolute; inset: 0; }
+  .wcard .im { height: 34mm; background: var(--p-soft); display: grid; place-items: center; }
+  .wcard .im .emo { font-size: 62px; line-height: 1; }
+  .wcard .en { font: 700 26px/1.1 "Andika", sans-serif; color: var(--p-dark); padding-top: 4px; }
+  .wcard .ua { padding-bottom: 5px; }
+  .more { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; margin-top: 9px; }
+  .more div { text-align: center; padding: 6px 2px 5px; background: var(--p-dark); color: #fff; border-radius: 12px; }
+  .more .emo { font-size: 28px; line-height: 1.1; }
+  .more .en { font: 700 19px "Andika", sans-serif; }
+  .more .ua { color: #cfc3ee; }
+
+  /* Page 2 */
+  .prep3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-bottom: 11px; }
+  .prep { border-radius: 14px; background: var(--p-soft); text-align: center; padding: 8px 6px 9px; border: 2px solid var(--p-mid); }
+  .prep svg { width: 100%; height: 42mm; }
+  .prep .w { font: 700 34px "Andika", sans-serif; color: var(--p-dark); line-height: 1; margin-top: 3px; }
+  .prep .ua { font-size: 14px; }
+  .things { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-bottom: 11px; }
+  .things > div { display: flex; align-items: center; gap: 8px; padding: 5px 9px; border: 1.5px solid var(--line); border-radius: 12px; }
+  .things .emo { font-size: 30px; line-height: 1; }
+  .things .en { font: 700 19px/1.1 "Andika", sans-serif; color: var(--p-dark); }
+  .things .ua { display: block; font-size: 11px; }
+  .readaloud p { margin: 0 0 9px; padding: 11px 16px; background: var(--p-dark); color: #fff; border-radius: 12px;
+    font: 400 25px/1.3 "Andika", sans-serif; }
+  .readaloud p b { color: #d9c9ff; }
+
+  /* Pages 3 + 4 */
+  .wh { display: grid; grid-template-columns: 62mm 1fr; gap: 6mm; align-items: center;
+    padding: 3mm; margin-bottom: 3mm; border: 2px solid var(--line); border-radius: 14px; }
+  .wh .ph { height: 46mm; border-radius: 10px; overflow: hidden; position: relative; }
+  .wh .no { position: absolute; left: 6px; top: 6px; width: 26px; height: 26px; border-radius: 8px; z-index: 2;
+    background: var(--p-dark); color: #fff; display: grid; place-items: center; font: 700 15px "Rubik", sans-serif; }
+  .wh .q { font: 700 24px/1.2 "Andika", sans-serif; color: var(--p-dark); }
+  .wh .a { font: 400 26px/1.7 "Andika", sans-serif; margin-top: 4mm; }
+
+  /* Page 5 */
+  .who { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5mm; }
+  .who > div { border: 2px solid var(--line); border-radius: 14px; padding: 3mm; }
+  .who .ph { height: 38mm; border-radius: 10px; overflow: hidden; position: relative; }
+  .who .no { position: absolute; left: 6px; top: 6px; width: 26px; height: 26px; border-radius: 8px; z-index: 2;
+    background: var(--p-dark); color: #fff; display: grid; place-items: center; font: 700 15px "Rubik", sans-serif; }
+  .who .q { font: 700 21px/1.2 "Andika", sans-serif; color: var(--p-dark); margin-top: 2.5mm; }
+  .who .a { font: 400 21px/1.5 "Andika", sans-serif; margin-top: 1mm; }
+
+  /* Page 6: match */
+  .m2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 62mm; padding: 0 6mm; }
+  .m2 .it { display: flex; align-items: center; gap: 9px; height: 13.4mm; }
+  .m2 .L { justify-content: flex-end; }
+  .m2 .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--p-dark); flex: none; }
+  .m2 .k { font: 700 12px "Rubik", sans-serif; color: var(--p); width: 16px; }
+  .m2 .L .k { text-align: right; }
+  .m2 .ukr { font: 500 18px "Rubik", sans-serif; }
+  .m2 .word { font: 400 24px "Andika", sans-serif; }
+
+  /* Page 7: letters */
+  .gap4 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .gc { border: 2px solid var(--line); border-radius: 14px; overflow: hidden; text-align: center; padding-bottom: 8px; }
+  .gc .im { height: 30mm; background: var(--p-soft); display: grid; place-items: center; margin-bottom: 6px; }
+  .gc .im .emo { font-size: 52px; line-height: 1; }
+  .gc .w { font: 400 27px "Andika", sans-serif; display: flex; justify-content: center; align-items: flex-end; flex-wrap: wrap; letter-spacing: 1px; }
+  .gc .box { width: 21px; height: 30px; margin: 0 2px; background: var(--p-soft); border-width: 2px; }
+  .copy3 { font: 400 22px "Andika", sans-serif; display: grid; gap: 4px; }
+  .copy3 div { display: flex; gap: 10px; align-items: flex-end; }
+  .copy3 .blank { flex: 1; height: 1.5em; }
+
+  /* Page 8 */
+  .circ2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+  .circ2 > div { display: grid; grid-template-columns: 34mm 1fr; gap: 3mm; align-items: center;
+    border: 2px solid var(--line); border-radius: 14px; padding: 2.5mm; }
+  .circ2 .ph { height: 25mm; border-radius: 9px; overflow: hidden; position: relative; }
+  .circ2 .s { font: 400 20px/1.3 "Andika", sans-serif; }
+  .circ2 .o { display: flex; gap: 8px; margin-top: 4px; font: 700 18px "Andika", sans-serif; color: var(--p-dark); }
+  .circ2 .o span { padding: 0 8px; border: 1.5px dashed var(--p-mid); border-radius: 20px; }
+  .draw3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .draw3 > div { border: 2px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .draw3 .s { font: 700 19px/1.25 "Andika", sans-serif; color: #fff; background: var(--p-dark); padding: 6px 10px; min-height: 17mm; display: flex; align-items: center; }
+  .draw3 .sq { height: 80mm; }
+
+  /* Page 9 */
+  .story { display: grid; grid-template-columns: 52mm 1fr; gap: 6mm; align-items: center;
+    padding: 4mm; border-radius: 14px; background: var(--p-soft); border: 2px solid var(--p-mid); margin-bottom: 11px; }
+  .story .ph { height: 62mm; border-radius: 10px; overflow: hidden; }
+  .story p { margin: 0; font: 400 24px/1.55 "Andika", sans-serif; }
+  .story p b { color: var(--p-dark); }
+  .tf { list-style: none; margin: 0; padding: 0; counter-reset: t; }
+  .tf li { counter-increment: t; display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-bottom: 1px dashed var(--line);
+    font: 400 22px "Andika", sans-serif; }
+  .tf li::before { content: counter(t) "."; width: 22px; font: 700 14px "Rubik", sans-serif; color: var(--p); }
+  .tf .yn { margin-left: auto; display: flex; gap: 8px; }
+  .tf .yn span { padding: 1px 12px; border: 2px solid var(--p-mid); border-radius: 20px; font: 700 16px "Andika", sans-serif; color: var(--p-dark); }
+  .qa2 div { display: flex; align-items: flex-end; gap: 8px; font: 700 22px "Andika", sans-serif; color: var(--p-dark); padding: 6px 2px; }
+  .qa2 div span { font-weight: 400; color: var(--ink); }
+  .qa2 .blank { flex: 1; height: 1.4em; }
+
+  /* Page 10 */
+  .ws { display: grid; grid-template-columns: repeat(10, 1fr); width: 118mm; flex: none;
+    border: 2px solid var(--p-dark); border-radius: 12px; overflow: hidden; }
+  .ws i { font: 700 25px "Andika", sans-serif; font-style: normal; text-align: center; line-height: 12mm; height: 12mm;
+    color: var(--ink); border: .5px solid var(--line); }
+  .wsrow { display: flex; gap: 8mm; align-items: flex-start; }
+  .wslist { flex: 1; display: grid; gap: 5px; }
+  .wslist div { display: flex; align-items: center; gap: 8px; padding: 3px 10px; border: 1.5px solid var(--line); border-radius: 10px; font: 700 20px "Andika", sans-serif; color: var(--p-dark); }
+  .wslist .emo { font-size: 22px; }
+  .write { font: 400 25px/2.1 "Andika", sans-serif; }
+  .stars { display: flex; gap: 14px; margin-top: 8px; font: 500 15px "Rubik", sans-serif; align-items: center; }
+  .stars b { color: var(--p-dark); } .stars i { font-style: normal; color: var(--p-mid); font-size: 26px; letter-spacing: 3px; }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a href="../index.html">← На головну</a>
+  <button onclick="window.print()">Друкувати / зберегти PDF</button>
+  <span class="hint">У вікні друку: A4, поля «Немає», увімкнути «Фонова графіка»</span>
+</div>
+
+<div id="root"></div>
+
+<script>
+  const IMG = "../assets/house/";
+  const $ = id => document.getElementById(id);
+  const boxes = n => '<span class="box"></span>'.repeat(n);
+  const ph = (f, extra = "") => `<img class="photo" src="${IMG}${f}.jpg" alt="" ${extra}>`;
+  const blank = (c = "") => `<span class="blank ${c}"></span>`;
+  const TOTAL = 10;
+
+  function page(n, title, tag, lead, body) {
+    return `<section class="page">
+      <div class="head"><b>My House</b><span class="name">Ім'я: <span></span></span></div>
+      <h1>${title} <span class="tag">${tag}</span></h1>
+      ${lead ? `<p class="lead">${lead}</p>` : ""}
+      ${body}
+      <div class="foot"><span>My House · Workbook</span><span class="num">${n}</span></div>
+    </section>`;
+  }
+  const exTitle = (n, en, ua) => `<div class="ex-title">${n === "" ? "" : `<span class="n">${n}</span>`} ${en} <small>${ua}</small></div>`;
+
+  // All words of the "new words" block, in teaching order. gap = letters to write in the missing-letters task.
+  const W = [
+    { en: "kitchen",     ua: "кухня",         img: "kitchen",     gap: "i" },
+    { en: "bathroom",    ua: "ванна кімната", img: "bathroom",    gap: "h" },
+    { en: "bedroom",     ua: "спальня",       img: "bedroom",     gap: "e" },
+    { en: "living room", ua: "вітальня",      img: "living-room", gap: "v" },
+    { en: "house",       ua: "будинок",       img: "house",       gap: "o" },
+    { en: "sofa",        ua: "диван",         img: "sofa",        gap: "o" },
+    { en: "armchair",    ua: "крісло",        img: "armchair",    gap: "c" },
+    { en: "carpet",      ua: "килим",         img: "carpet",      gap: "p" },
+    { en: "floor",       ua: "підлога",       img: "floor",       gap: "oo" },
+    { en: "chair",       ua: "стілець",       emoji: "🪑",         gap: "a" },
+    { en: "teacher",     ua: "вчитель",       emoji: "🧑‍🏫",        gap: "ea" },
+    { en: "computer",    ua: "комп'ютер",     emoji: "💻",         gap: "u" },
+    { en: "screen",      ua: "екран",         emoji: "📺",         gap: "ee" },
+    { en: "music",       ua: "музика",        emoji: "🎵",         gap: "u" },
+    { en: "new",         ua: "новий",         emoji: "🆕",         gap: "e" },
+    { en: "three",       ua: "три",           emoji: "3️⃣",        gap: "ee" },
+    { en: "thank you",   ua: "дякую",         emoji: "🙏",         gap: "a" },
+  ];
+  const wordPic = w => w.img ? `<img class="photo" src="${IMG}${w.img}.jpg" alt="">` : `<span class="emo">${w.emoji}</span>`;
+  const hole = w => { const i = w.en.indexOf(w.gap); return w.en.slice(0, i) + boxes(w.gap.length) + w.en.slice(i + w.gap.length); };
+
+  // Photo exercises. place = the answer: [in|on|under] + the place
+  const P = {
+    balls: { f: "wb-balls", q: "Where are the balls?",  s: "Balls are",       prep: "in",    place: "bathroom" },
+    bike:  { f: "wb-bike",  q: "Where is the bike?",    s: "The bike is",     prep: "in",    place: "kitchen" },
+    caps:  { f: "wb-caps",  q: "Where are the caps?",   s: "Caps are",        prep: "on",    place: "carpet" },
+    books: { f: "wb-books", q: "Where are the books?",  s: "Books are",       prep: "under", place: "bed" },
+    pens:  { f: "wb-pens",  q: "Where are the pens?",   s: "Pens are",        prep: "in",    place: "box" },
+    cows:  { f: "wb-cows",  q: "Where are the cows?",   s: "Cows are",        prep: "in",    place: "village" },
+    cat:   { f: "wb-cat",   q: "Where is the cat?",     s: "The cat is",      prep: "on",    place: "sofa" },
+    dog:   { f: "wb-dog",   q: "Where is the dog?",     s: "The dog is",      prep: "on",    place: "sofa" },
+    quad:  { f: "wb-quad",  q: "Where are the quad bikes?", s: "Quad bikes are", prep: "on",  place: "road" },
+  };
+  const whRow = (k, i) => { const p = P[k]; return `<div class="wh">
+      <div class="ph"><span class="no">${i}</span>${ph(p.f)}</div>
+      <div><div class="q">${p.q}</div>
+      <div class="a">${p.s} ${blank("s")} the ${blank()}.</div></div></div>`; };
+
+  // simple pictures for in / on / under
+  const ball = (x, y) => `<circle cx="${x}" cy="${y}" r="13" fill="#e0457b"/><circle cx="${x - 4}" cy="${y - 4}" r="4" fill="#fff" opacity=".45"/>`;
+  const SVG = {
+    in: `<svg viewBox="0 0 160 110"><path d="M32 40 L40 96 H120 L128 40" fill="#c7b6ee" stroke="#2f1a63" stroke-width="4" stroke-linejoin="round"/>${ball(80, 64)}<path d="M32 40 L40 96 H120 L128 40" fill="none" stroke="#2f1a63" stroke-width="4" stroke-linejoin="round"/><path d="M26 40 H134" stroke="#2f1a63" stroke-width="5" stroke-linecap="round"/></svg>`,
+    on: `<svg viewBox="0 0 160 110">${ball(80, 42)}<rect x="22" y="56" width="116" height="10" rx="3" fill="#2f1a63"/><rect x="32" y="66" width="9" height="34" fill="#5b34a8"/><rect x="119" y="66" width="9" height="34" fill="#5b34a8"/></svg>`,
+    under: `<svg viewBox="0 0 160 110"><rect x="22" y="20" width="116" height="10" rx="3" fill="#2f1a63"/><rect x="32" y="30" width="9" height="68" fill="#5b34a8"/><rect x="119" y="30" width="9" height="68" fill="#5b34a8"/>${ball(80, 84)}</svg>`,
+  };
+
+  const pages = [];
+
+  // ===== 1. Words =====
+  pages.push(page(1, "My House", "мій дім", "Прочитай слова вголос. Скажи, що на картинці.",
+    `<div class="wgrid">${W.slice(0, 9).concat([W[9], W[11], W[12]]).map(w =>
+        `<div class="wcard"><div class="im">${wordPic(w)}</div><div class="en">${w.en}</div><div class="ua">${w.ua}</div></div>`).join("")}</div>
+     <div class="more">${[W[10], W[13], W[14], W[15], W[16]].map(w =>
+        `<div><div class="emo">${w.emoji}</div><div class="en">${w.en}</div><div class="ua">${w.ua}</div></div>`).join("")}</div>`));
+
+  // ===== 2. in / on / under =====
+  pages.push(page(2, "In · On · Under", "де це?", "Подивись на кульку. Де вона? Прочитай слова вголос.",
+    `<div class="prep3">
+        <div class="prep">${SVG.in}<div class="w">in</div><div class="ua">в</div></div>
+        <div class="prep">${SVG.on}<div class="w">on</div><div class="ua">на</div></div>
+        <div class="prep">${SVG.under}<div class="w">under</div><div class="ua">під</div></div>
+     </div>
+     <div class="ex">${exTitle("", "New words", "нові слова")}
+       <div class="things">${[
+         ["⚽","ball","м'яч"],["🚲","bike","велосипед"],["🧢","cap","кепка"],["🖊️","pen","ручка"],
+         ["📕","book","книга"],["🐱","cat","кіт"],["🐶","dog","собака"],["🐮","cow","корова"],
+         ["📦","box","коробка"],["🛏️","bed","ліжко"],["🛁","bath","ванна"],["🏘️","village","село"],
+         ["🏍️","quad bike","квадроцикл"],["🛣️","road","дорога"]
+       ].map(t => `<div><span class="emo">${t[0]}</span><span class="en">${t[1]}<span class="ua">${t[2]}</span></span></div>`).join("")}</div>
+       <p class="note">Багато: ball – <b>balls</b>, cap – <b>caps</b>, pen – <b>pens</b>, book – <b>books</b>, cow – <b>cows</b>.</p>
+     </div>
+     <div class="ex readaloud">${exTitle("", "Read aloud", "прочитай уголос")}
+       <p>The ball is <b>in</b> the box.</p>
+       <p>The ball is <b>on</b> the sofa.</p>
+       <p>The ball is <b>under</b> the chair.</p>
+       <p>The cat is <b>on</b> the carpet.</p>
+     </div>`));
+
+  // ===== 3. Where are ...? (1) =====
+  const bankPlaces = (list) => `<div class="bank big"><b>in · on · under</b>${list.map(x => `<span>${x[0]}<i>${x[1]}</i></span>`).join("")}</div>`;
+  pages.push(page(3, "Where is it?", "де це?", "",
+    `<div class="ex">${exTitle(1, "Look and write: in, on or under + the place", "подивись і впиши: in, on або under + місце")}
+      ${bankPlaces([["bathroom", "ванна кімната"], ["kitchen", "кухня"], ["carpet", "килим"], ["bed", "ліжко"]])}
+      ${["balls", "bike", "caps", "books"].map((k, i) => whRow(k, i + 1)).join("")}</div>`));
+
+  // ===== 4. Where are ...? (2) =====
+  pages.push(page(4, "Where is it?", "де це?", "",
+    `<div class="ex">${exTitle(2, "Look and write: in, on or under + the place", "подивись і впиши: in, on або under + місце")}
+      ${bankPlaces([["box", "коробка"], ["village", "село"], ["sofa", "диван"], ["road", "дорога"]])}
+      ${["pens", "cows", "cat", "quad"].map((k, i) => whRow(k, i + 1)).join("")}</div>`));
+
+  // ===== 5. Who / what is ...? =====
+  const WHO = [
+    { k: "dog",   q: "Who sits on the sofa?",         a: "On the sofa sits a" },
+    { k: "books", q: "What is under the bed?",        a: "Under the bed are" },
+    { k: "balls", q: "What is in the bathroom?",      a: "In the bathroom are" },
+    { k: "caps",  q: "What is on the carpet?",        a: "On the carpet are" },
+    { k: "pens",  q: "What is in the box?",           a: "In the box are" },
+    { k: "cows",  q: "Who is in the village?",        a: "In the village are" },
+  ];
+  pages.push(page(5, "Who? What?", "хто? що?", "",
+    `<div class="ex">${exTitle(3, "Look and answer", "подивись і дай відповідь")}
+      <div class="bank big"><b>Words</b>${[["cat","кіт"],["dog","собака"],["cows","корови"],["books","книги"],["balls","м'ячі"],["caps","кепки"],["pens","ручки"]].map(x => `<span>${x[0]}<i>${x[1]}</i></span>`).join("")}</div>
+      <div class="who">${WHO.map((w, i) => `<div><div class="ph"><span class="no">${i + 1}</span>${ph(P[w.k].f)}</div>
+        <div class="q">${w.q}</div><div class="a">${w.a} ${blank()}.</div></div>`).join("")}</div>
+    </div>`));
+
+  // ===== 6. Match =====
+  const PERM = [5, 12, 1, 9, 15, 3, 16, 0, 7, 13, 2, 10, 14, 6, 11, 4, 8];
+  const LET = "ABCDEFGHIJKLMNOPQ";
+  pages.push(page(6, "Match", "з'єднай", "",
+    `<div class="ex">${exTitle(4, "Match the Ukrainian word and the English word", "з'єднай слово з перекладом")}
+      <div class="m2">${W.map((w, i) => `
+        <div class="it L"><span class="k">${i + 1}</span><span class="ukr">${w.ua}</span><span class="dot"></span></div>
+        <div class="it"><span class="dot"></span><span class="word">${W[PERM[i]].en}</span><span class="k">${LET[i]}</span></div>`).join("")}</div>
+    </div>`));
+
+  // ===== 7. Missing letters =====
+  const pickG = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12];
+  pages.push(page(7, "Missing Letters", "пропущені букви", "",
+    `<div class="ex">${exTitle(5, "Write the missing letters", "впиши пропущені літери")}
+      <div class="gap4">${pickG.map(i => `<div class="gc"><div class="im">${wordPic(W[i])}</div><div class="w">${hole(W[i])}</div></div>`).join("")}</div></div>
+     <div class="ex">${exTitle(6, "Write three words you like", "перепиши три слова, які сподобались")}
+      <div class="copy3"><div>1.${blank()}</div><div>2.${blank()}</div><div>3.${blank()}</div></div></div>`));
+
+  // ===== 8. Circle + draw =====
+  const CIR = [
+    ["cat", "The cat is", "sofa"], ["books", "The books are", "bed"], ["caps", "The caps are", "carpet"],
+    ["pens", "The pens are", "box"], ["balls", "The balls are", "bathroom"], ["bike", "The bike is", "kitchen"],
+  ];
+  pages.push(page(8, "Circle and Draw", "обведи і намалюй", "",
+    `<div class="ex">${exTitle(7, "Circle the right word", "обведи правильне слово")}
+      <div class="circ2">${CIR.map(c => `<div><div class="ph">${ph(P[c[0]].f)}</div>
+        <div><div class="s">${c[1]} <b>…</b> the ${c[2]}.</div>
+        <div class="o"><span>in</span><span>on</span><span>under</span></div></div></div>`).join("")}</div></div>
+     <div class="ex">${exTitle(8, "Read and draw", "прочитай і намалюй")}
+      <div class="draw3">
+        <div><div class="s">A ball is under the chair.</div><div class="sq"></div></div>
+        <div><div class="s">A cat is in the box.</div><div class="sq"></div></div>
+        <div><div class="s">A pen is on the carpet.</div><div class="sq"></div></div>
+      </div></div>`));
+
+  // ===== 9. Reading =====
+  pages.push(page(9, "My House", "читаємо", "",
+    `<div class="ex">${exTitle(9, "Read the text", "прочитай текст")}
+      <div class="story"><div class="ph">${ph("house", 'style="object-position:center"')}</div>
+        <p>This is my <b>house</b>. It is <b>new</b>.<br>
+        <b>Mum</b> is in the kitchen.<br>
+        <b>Dad</b> is on the sofa.<br>
+        The <b>cat</b> is on the carpet.<br>
+        I am in my bedroom.<br>
+        My ball is under the bed.</p></div></div>
+     <div class="ex">${exTitle(10, "Yes or No?", "так чи ні? — обведи")}
+      <ol class="tf">${[
+        "The house is new.", "Mum is in the bathroom.", "Dad is on the sofa.",
+        "The cat is on the carpet.", "I am in the kitchen.", "The ball is under the bed.",
+      ].map(t => `<li><span>${t}</span><span class="yn"><span>Yes</span><span>No</span></span></li>`).join("")}</ol></div>
+     <div class="ex">${exTitle(11, "Answer", "дай відповідь")}
+      <div class="qa2">
+        <div>Where is Mum?<span>Mum is in the</span>${blank()}<span>.</span></div>
+        <div>Where is the ball?<span>It is under the</span>${blank()}<span>.</span></div>
+      </div></div>`));
+
+  // ===== 10. Wordsearch + write =====
+  const WS_WORDS = [
+    ["HOUSE", 0, 0, 0, 1], ["FLOOR", 2, 4, 0, 1], ["CHAIR", 5, 3, 0, 1], ["SOFA", 8, 6, 0, 1],
+    ["BOX", 0, 9, 1, 0], ["CAT", 3, 0, 1, 0], ["DOG", 6, 1, 1, 0], ["BED", 6, 5, 1, 0],
+  ];
+  const grid = Array.from({ length: 10 }, () => Array(10).fill(""));
+  WS_WORDS.forEach(([w, r, c, dr, dc]) => [...w].forEach((ch, i) => {
+    const y = r + dr * i, x = c + dc * i;
+    if (grid[y][x] && grid[y][x] !== ch) throw new Error("wordsearch clash " + w);
+    grid[y][x] = ch;
+  }));
+  let seed = 7;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  const FILL = "ABCDEFGHIKLMNOPRSTUW";
+  grid.forEach(row => row.forEach((v, x) => { if (!v) row[x] = FILL[Math.floor(rnd() * FILL.length)]; }));
+  const emo = { HOUSE: "🏠", FLOOR: "🟫", CHAIR: "🪑", SOFA: "🛋️", BOX: "📦", CAT: "🐱", DOG: "🐶", BED: "🛏️" };
+  pages.push(page(10, "Word Search", "знайди слова", "",
+    `<div class="ex">${exTitle(12, "Find the words and circle them", "знайди слова й обведи (→ та ↓)")}
+      <div class="wsrow"><div class="ws">${grid.map(r => r.map(c => `<i>${c}</i>`).join("")).join("")}</div>
+        <div class="wslist">${WS_WORDS.map(w => `<div><span class="emo">${emo[w[0]]}</span>${w[0].toLowerCase()}</div>`).join("")}</div></div></div>
+     <div class="ex">${exTitle(13, "Write about you", "напиши про себе")}
+      <div class="write">
+        <div>My house is ${blank("l")}.</div>
+        <div>In my bedroom is a ${blank("l")}.</div>
+        <div>On my bed is a ${blank("l")}.</div>
+        <div>Under my bed is a ${blank("l")}.</div>
+      </div></div>
+     <div class="stars"><b>Я молодець!</b><i>★ ★ ★ ★ ★</i></div>`));
+
+  $("root").innerHTML = pages.join("");
+</script>
+</body>
+</html>

@@ -40,6 +40,7 @@ house/                   — блок «Where is …?» (3 клас). У кож�
   am-is-are-quiz.html   — встав am / is / are в речення
   missing-letter.html   — впиши пропущену букву в нових словах
   in-on-under.html      — 20 завдань: кіт/собака on / under / in (sofa, chair, bed, carpet, box), тест + з'єднай
+  workbook.html         — воркбук: 10 аркушів А4 для друку в темно-фіолетовому стилі: слова, in/on/under, "Where are the balls?", "Who sits on the sofa?", з'єднай з перекладом, пропущені букви, обведи + намалюй, текст Yes/No, філворд (фото wb-*.jpg в assets/house/)
 body/                    — блок «Parts of the Body» (5 клас), дані й малюнки в assets/body.js
   body-parts.html       — 3 аркуші А4 для друку в зеленому стилі: слова з картинками, пропущені букви + з'єднування, тексти "hurt his knee" + питання
   touch-your.html       — "Touch your head!" з відліком: Easy 10 с / Hard 5 с, без підказок (звук можна ввімкнути)
