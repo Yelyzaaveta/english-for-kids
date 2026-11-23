@@ -40,7 +40,7 @@
     },
     render(set, g) {
       matchBoard(document.getElementById("board"),
-        set.map(w => ({ left: foodPic(w), right: `${w.en}<small>${w.ua}</small>`, msg: `${w.en} — ${w.ua}`, say: w.en })),
+        set.map(w => ({ left: foodPic(w), right: w.en, msg: `<b>${w.en}</b>`, say: w.en })),
         g, { leftCls: "food-pic" });
     },
   });
