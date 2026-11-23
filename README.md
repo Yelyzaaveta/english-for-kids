@@ -18,6 +18,8 @@ assets/
   reading.css / .js     — спільне для ігор на читання: підсвічування голосної, правило складу
   house.css / .js       — спільне для блоку house/: слова, гра з сердечками, з'єднування, малюнки меблів
   house/                — фото до блоку house/ (стиснуті jpg)
+  food.css / .js        — спільне для блоку food/: 21 слово (переклад, countable, пропущені букви), стилі диктанту й гри «Max Forgot!»
+  food/                 — фото до блоку food/ (стиснуті jpg, назва = слово; оригінали лежать у sviata/)
 beginners/
   alphabet.html         — алфавіт із закритими картками
   alphabet-type.html    — алфавіт, де пропущені букви треба вписати з клавіатури
@@ -53,6 +55,12 @@ body/                    — блок «Parts of the Body» (5 клас), дан
   missing-letter.html   — впиши 1–2 пропущені букви
   find-picture.html     — слово або звук → знайди картинку
   hurt-story.html       — текст "Max rode a bike and hurt his knee" → що поранив → впиши пропущені букви
+food/                    — блок «Food» (5 клас, Unit 6): 21 слово, герої Max, Mum Tanya, кіт Aslan, собака Bonya. Дані в assets/food.js
+  workbook.html         — воркбук: 9 аркушів А4 в помаранчевому стилі: слова (з позначкою countable), some/much/many, текст "Max Goes Shopping" + True/False, хто що отримав, питання, детектив-загадки, зайве слово, з'єднай, склади, пропущені букви, філворд, діалог у магазині
+  dictation.html        — Dictation 60: звучить слово, 60 секунд, 1–2 літери вже дані, через 30 с з'являється картинка-підказка
+  forgot.html           — Max Forgot!: запам'ятай список мами → що Макс забув покласти в пакет
+  some-much-many.html   — is / are, much / many, a / an / some
+  match.html            — з'єднай картинку зі словом
 words/
   picture-match.html    — з'єднай картинку зі словом
   colours.html          — знайди колір
