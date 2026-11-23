@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Max Forgot!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<link rel="stylesheet" href="../assets/food.css">
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Max <span class="accent">Forgot!</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task" id="task"></p>
+  <div id="stage" style="margin-top:10px; display:flex; flex-direction:column; align-items:center; gap:10px; width:100%"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script src="../assets/food.js"></script>
+<script>
+  const stage = document.getElementById("stage"), task = document.getElementById("task");
+  let tok = 0;   // a new question (or Restart) cancels timers of the old one
+
+  // list sizes grow: the longer the list, the harder it is to remember
+  const SIZES = [3, 3, 4, 4, 5, 5, 6, 6];
+
+  heartsGame({
+    hearts: 3,
+    makeRounds: () => SIZES.map(n => {
+      const items = shuffle(FOOD).slice(0, n);
+      const forgot = pick(items);
+      const decoys = shuffle(FOOD.filter(w => !items.includes(w))).slice(0, 3);
+      return { items, forgot, options: shuffle([forgot, ...decoys]) };
+    }),
+    render({ items, forgot, options }, g) {
+      const my = ++tok;
+      const secs = 4 + items.length * 2;
+      task.innerHTML = `Mum's list: remember it! <span class="ua">Список мами: запам'ятай!</span>`;
+      stage.innerHTML = `<div class="note"><h3>Shopping list</h3><ul>${items.map(w => `<li>${w.en} <small>${w.ua}</small></li>`).join("")}</ul></div>
+        <div class="hintline" id="cd" style="letter-spacing:0">${secs}</div>
+        <button class="btn blue" id="ready">I'm ready →</button>`;
+      speak(items.map(w => w.en).join(", "), .8);
+      let left = secs;
+      const tick = setInterval(() => {
+        if (my !== tok) return clearInterval(tick);
+        const cd = document.getElementById("cd");
+        if (cd) cd.textContent = --left;
+        if (left <= 0) { clearInterval(tick); question(); }
+      }, 1000);
+      document.getElementById("ready").addEventListener("click", () => { clearInterval(tick); question(); });
+
+      function question() {
+        if (my !== tok) return;
+        const inBag = shuffle(items.filter(w => w !== forgot));
+        task.innerHTML = `Max forgot one thing. What is missing? <span class="ua">Макс щось забув. Чого немає в пакеті?</span>`;
+        stage.innerHTML = `<div class="bag">${inBag.map(w => foodPic(w)).join("")}</div>
+          <div class="hintline" style="letter-spacing:0">🛍️ Max's bag</div>
+          <div class="answers two" id="answers">${options.map(w => `<button class="ans" data-en="${w.en}">${w.en}</button>`).join("")}</div>`;
+        const box = document.getElementById("answers");
+        box.querySelectorAll(".ans").forEach(b => b.addEventListener("click", () => {
+          if (g.busy) return;
+          box.querySelectorAll(".ans").forEach(x => { x.disabled = true; if (x.dataset.en === forgot.en) x.classList.add("right"); });
+          const msg = `Max forgot the <b>${forgot.en}</b> <span class="ua">(${forgot.ua})</span>`;
+          if (b.dataset.en === forgot.en) { flash(b, "pop"); g.right(msg, forgot.en); }
+          else { b.classList.add("wrong"); flash(b, "shake"); g.wrong(msg, forgot.en); }
+        }));
+      }
+    },
+  });
+
+</script>
+</body>
+</html>

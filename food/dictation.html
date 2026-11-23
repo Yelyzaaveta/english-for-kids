@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dictation 60</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<link rel="stylesheet" href="../assets/food.css">
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Dictation <span class="accent">60</span></h1>
+  <div class="score" id="score">0</div>
+</header>
+
+<main>
+  <div class="dict" id="dict"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script src="../assets/food.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const CIRC = 2 * Math.PI * 44;
+  const ROUNDS = 10, SECS = 60, HINT_AT = 30;   // picture hint appears when 30 seconds are left
+  let list, i, score, raf, token = 0, locked, fastTotal;
+
+  function beep() {
+    try {
+      const a = new (window.AudioContext || window.webkitAudioContext)(), o = a.createOscillator(), g = a.createGain();
+      o.connect(g); g.connect(a.destination); o.frequency.value = 330; g.gain.value = .08;
+      o.start(); o.stop(a.currentTime + .25);
+    } catch (e) {}
+  }
+
+  // 1-2 letters are given: the first one, and for long words one more
+  function givenLetters(en) {
+    const idx = [...en].map((c, k) => k).filter(k => en[k] !== " ");
+    const give = new Set([0]);
+    if (idx.length >= 6) give.add(pick(idx.slice(2)));
+    return give;
+  }
+
+  function intro() {
+    cancelAnimationFrame(raf); token++;
+    document.querySelector(".result")?.classList.remove("show");
+    $("score").textContent = 0;
+    $("dict").innerHTML = `<p class="start">Listen to the word and write it.<br>
+        You have <b>${SECS} seconds</b> for every word. 1–2 letters are already given.<br>
+        After <b>${HINT_AT} seconds</b> a picture helps you.<br>
+        <span class="ua">Послухай слово і напиши його. На кожне слово — ${SECS} секунд. Одна-дві літери вже дані.</span></p>
+        <button class="btn green" id="go">Start</button>`;
+    $("go").addEventListener("click", begin);
+  }
+
+  function begin() {
+    list = shuffle(FOOD).slice(0, ROUNDS);
+    i = 0; score = 0; fastTotal = 0;
+    $("score").textContent = 0;
+    show();
+  }
+
+  function show() {
+    const w = list[i], my = ++token;
+    locked = false;
+    const given = givenLetters(w.en);
+    $("dict").innerHTML = `
+      <div class="count" style="color:var(--muted);font-weight:700">${i + 1} / ${list.length}</div>
+      <div class="ring" id="ring">
+        <svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="44"/><circle class="fg" id="fg" cx="50" cy="50" r="44" style="stroke-dasharray:${CIRC};stroke-dashoffset:0"/></svg>
+        <div class="num" id="num">${SECS}</div>
+      </div>
+      <div class="hint-pic" id="hint"><span>💡 picture in ${HINT_AT} s</span></div>
+      <div class="lets" id="lets">${[...w.en].map((c, k) =>
+        c === " " ? `<span class="sp"></span>`
+        : given.has(k) ? `<input class="given" value="${c}" disabled aria-label="given letter">`
+        : `<input maxlength="1" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="letter">`).join("")}</div>
+      <div class="explain" id="explain">&nbsp;</div>
+      <div class="ctrl">
+        <button class="btn blue" id="say"><span data-icon="sound"></span> Listen again</button>
+        <button class="btn green" id="ok">Check ✓</button>
+      </div>`;
+    document.querySelectorAll("#say [data-icon]").forEach(el => el.insertAdjacentHTML("afterbegin", ICON_SOUND));
+
+    const inputs = [...document.querySelectorAll("#lets input")];
+    const free = inputs.filter(x => !x.disabled);
+    const say = () => speak(w.en, .7);
+    $("say").addEventListener("click", say);
+    say();
+    free[0]?.focus();
+
+    free.forEach((inp, k) => {
+      inp.addEventListener("input", () => {
+        const v = inp.value.trim().toLowerCase();
+        if (!/^[a-z]$/.test(v)) { inp.value = ""; return; }
+        inp.value = v;
+        (free[k + 1] || null)?.focus();
+        if (free.every(x => x.value)) check();
+      });
+      inp.addEventListener("keydown", e => {
+        if (e.key === "Enter") check();
+        else if (e.key === "Backspace" && !inp.value) { free[k - 1]?.focus(); }
+        else if (e.key === "ArrowLeft") free[k - 1]?.focus();
+        else if (e.key === "ArrowRight") free[k + 1]?.focus();
+      });
+      inp.addEventListener("focus", () => inp.select());
+    });
+    $("ok").addEventListener("click", check);
+
+    function check() {
+      if (locked || my !== token) return;
+      let k = 0;
+      const built = [...w.en].map(c => c === " " ? " " : inputs[k++].value || "_").join("");
+      if (built.includes("_")) { flash($("lets"), "shake"); return; }
+      if (built === w.en) {
+        locked = true; cancelAnimationFrame(raf);
+        inputs.forEach(x => { x.disabled = true; x.classList.remove("given"); x.classList.add("right"); });
+        flash($("lets"), "pop");
+        const used = (SECS * 1000 - left) / 1000;
+        fastTotal += used;
+        score++; $("score").textContent = score;
+        $("explain").innerHTML = `<span class="ok">✅ <b>${w.en}</b> <span class="ua">— ${w.ua}</span> · ${used.toFixed(0)} s</span>`;
+        speak(w.en, .8);
+        setTimeout(() => my === token && next(), 1900);
+      } else {
+        flash($("lets"), "shake");
+        inputs.forEach(x => { if (!x.disabled) x.classList.add("wrong"); });
+        $("explain").innerHTML = `Not yet! Listen again and try once more. <span class="ua">Ще ні — послухай і спробуй ще.</span>`;
+        setTimeout(() => inputs.forEach(x => x.classList.remove("wrong")), 700);
+        free[0].focus();
+      }
+    }
+
+    // countdown
+    let left = SECS * 1000;
+    const t0 = performance.now();
+    let hinted = false;
+    raf = requestAnimationFrame(function step(now) {
+      if (my !== token || locked) return;
+      left = Math.max(0, SECS * 1000 - (now - t0));
+      $("fg").style.strokeDashoffset = CIRC * (1 - left / (SECS * 1000));
+      $("num").textContent = Math.ceil(left / 1000);
+      $("ring").classList.toggle("low", left <= 10000);
+      if (!hinted && left <= HINT_AT * 1000) {
+        hinted = true;
+        $("hint").innerHTML = foodPic(w);
+      }
+      if (left <= 0) {
+        locked = true; beep();
+        inputs.forEach(x => { x.disabled = true; x.classList.remove("wrong"); });
+        [...w.en].filter(c => c !== " ").forEach((c, n) => { if (!inputs[n].classList.contains("given")) { inputs[n].value = c; inputs[n].classList.add("wrong"); } });
+        $("hint").innerHTML = foodPic(w);
+        $("explain").innerHTML = `⏰ Time is up! <b>${w.en}</b> <span class="ua">— ${w.ua}</span>`;
+        speak(w.en, .8);
+        setTimeout(() => my === token && next(), 3000);
+        return;
+      }
+      raf = requestAnimationFrame(step);
+    });
+  }
+
+  function next() {
+    i++;
+    if (i >= list.length) {
+      const avg = score ? Math.round(fastTotal / score) : 0;
+      showResult({ score, total: list.length, onAgain: begin, extra: score ? `в середньому ${avg} с на слово` : "" });
+      return;
+    }
+    show();
+  }
+
+  $("restart").addEventListener("click", intro);
+  intro();
+</script>
+</body>
+</html>

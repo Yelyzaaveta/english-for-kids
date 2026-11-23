@@ -1,0 +1,51 @@
+/* Extra styles for the "Food" block (food/) - on top of common.css + house.css */
+.photo.food { height: min(30vh, 56vw); aspect-ratio: 4 / 3; object-fit: contain; background: #0b1424; }
+.ua-line { font-size: clamp(16px, 2.8vh, 22px); margin: -4px 0 6px; }
+
+/* match board with pictures on the left */
+.mi.food-pic { padding: 4px; }
+.mi.food-pic img { display: block; height: min(12vh, 20vw); width: min(18vh, 30vw); object-fit: cover; border-radius: 10px; margin: 0 auto; }
+.mi small { display: block; color: var(--yellow); font-weight: 500; font-size: .7em; }
+
+/* Mum's list / the bag */
+.note {
+  background: #fff4b8; color: #4a3b00; border-radius: 6px; padding: 14px 22px 16px; max-width: 420px; width: 100%;
+  box-shadow: 0 8px 20px #0007; transform: rotate(-1.2deg);
+  font-weight: 700; font-size: clamp(18px, 3vh, 24px); line-height: 1.5;
+}
+.note h3 { margin: 0 0 4px; font-size: .8em; letter-spacing: 1px; text-transform: uppercase; color: #a07a00; }
+.note ul { margin: 0; padding-left: 1.2em; }
+.note small { font-weight: 500; opacity: .65; }
+.bag { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 560px; margin: 8px 0 4px;
+  padding: 10px; border-radius: 18px; background: #ffffff0d; border: 2px dashed var(--card-edge); }
+.bag img { width: clamp(64px, 11vh, 92px); height: clamp(64px, 11vh, 92px); object-fit: cover; border-radius: 12px; border: 2px solid var(--card-edge); }
+
+/* dictation: letter boxes + timer */
+.dict { display: flex; flex-direction: column; align-items: center; gap: clamp(10px, 2.2vh, 20px); width: min(720px, 100%); }
+.dict .ring { position: relative; width: min(20vh, 40vw, 150px); aspect-ratio: 1; }
+.dict .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.dict .ring circle { fill: none; stroke-width: 10; }
+.dict .ring .bg { stroke: var(--card-edge); }
+.dict .ring .fg { stroke: var(--green); stroke-linecap: round; }
+.dict .ring.low .fg { stroke: var(--red); }
+.dict .ring .num { position: absolute; inset: 0; display: grid; place-items: center; font-size: min(7vh, 14vw, 52px); font-weight: 800; }
+.dict .hint-pic { height: min(22vh, 44vw); min-height: 20px; display: grid; place-items: center; }
+.dict .hint-pic img { height: min(22vh, 44vw); width: auto; max-width: 100%; object-fit: contain; border-radius: 14px; border: 3px solid var(--card-edge); background: #0b1424; }
+.dict .hint-pic span { color: var(--muted); font-weight: 700; font-size: clamp(14px, 2.2vh, 18px); }
+.lets { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.lets input, .lets .sp {
+  width: clamp(30px, 6.2vh, 46px); height: clamp(40px, 8vh, 58px); text-align: center; padding: 0;
+  font: inherit; font-size: clamp(20px, 4.2vh, 32px); font-weight: 800; text-transform: lowercase;
+  border-radius: 10px; border: 2px solid var(--card-edge); background: linear-gradient(180deg, var(--card-top), var(--card));
+  color: var(--text); outline: none; caret-color: var(--yellow);
+}
+.lets input:focus { border-color: var(--yellow); box-shadow: 0 0 0 3px #ffc93c55; }
+.lets input.given { border-color: var(--yellow); color: var(--yellow); background: #ffc93c1f; }
+.lets input.right { border-color: var(--green); color: var(--green); background: #3ddc8422; }
+.lets input.wrong { border-color: var(--red); color: var(--red); background: #ff5a5f22; }
+.lets .sp { width: 14px; border: 0; background: none; }
+.dict .ctrl { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.dict .start { text-align: center; color: var(--muted); font-size: clamp(16px, 2.6vh, 20px); line-height: 1.5; }
+.dict .start b { color: var(--yellow); }
+
+.qline .gap { display: inline-block; min-width: 2.6em; border-bottom: 3px solid var(--yellow); text-align: center; color: var(--yellow); font-weight: 700; }

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Some, Much, Many</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<link rel="stylesheet" href="../assets/food.css">
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Some · <span class="accent">Much</span> · Many</h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task">Choose the right word. <span class="ua">Обери правильне слово.</span></p>
+  <div id="pic" style="margin-top:8px"></div>
+  <div class="qline"><span class="txt" id="q"></span></div>
+  <div class="answers two" id="answers" style="grid-template-columns:repeat(3,1fr)"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script src="../assets/food.js"></script>
+<script>
+  const vowel = s => /^[aeiou]/i.test(s);
+  const why = w => w.count ? `${w.en} — можна порахувати (countable)` : `${w.en} — не можна порахувати (uncountable)`;
+
+  // three kinds of questions
+  function make(kind, w) {
+    if (kind === "isare") {
+      const ans = w.count ? "are" : "is";
+      return { w, s: `There ___ some ${w.en} in the fridge.`, opts: ["is", "are"], ans,
+        note: `${why(w)} → ${ans}` };
+    }
+    if (kind === "much") {
+      const ans = w.count ? "many" : "much";
+      return { w, s: `How ___ ${w.en} do we need?`, opts: ["much", "many"], ans,
+        note: `${why(w)} → ${ans}` };
+    }
+    // a / an / some
+    const single = w.count && Math.random() < .6;
+    const noun = single ? w.sg : w.en;
+    const ans = single ? (vowel(noun) ? "an" : "a") : "some";
+    const note = single ? `one ${noun}: ${vowel(noun) ? "голосний звук → an" : "приголосний звук → a"}`
+      : w.count ? `${noun} — багато → some` : `${why(w)} → some`;
+    return { w, s: `Max wants ___ ${noun}, please.`, opts: ["a", "an", "some"], ans, note };
+  }
+
+  heartsGame({
+    hearts: 4,
+    makeRounds: () => {
+      const ws = shuffle(FOOD).slice(0, 12);
+      return ws.map((w, k) => make(["isare", "much", "a"][k % 3], w));
+    },
+    render({ w, s, opts, ans, note }, g) {
+      document.getElementById("pic").innerHTML = foodPic(w, "photo food");
+      const q = document.getElementById("q");
+      q.innerHTML = s.replace("___", `<span class="gap">?</span>`);
+      const box = document.getElementById("answers");
+      box.style.gridTemplateColumns = `repeat(${opts.length}, 1fr)`;
+      box.innerHTML = opts.map(o => `<button class="ans">${o}</button>`).join("");
+      box.querySelectorAll(".ans").forEach(b => b.addEventListener("click", () => {
+        if (g.busy) return;
+        box.querySelectorAll(".ans").forEach(x => { x.disabled = true; if (x.textContent === ans) x.classList.add("right"); });
+        const full = s.replace("___", ans);
+        q.innerHTML = s.replace("___", `<b>${ans}</b>`);
+        const msg = `<b>${full}</b> <span class="ua">(${note})</span>`;
+        if (b.textContent === ans) { flash(b, "pop"); g.right(msg, full); }
+        else { b.classList.add("wrong"); flash(b, "shake"); g.wrong(msg, full); }
+      }));
+    },
+  });
+
+</script>
+</body>
+</html>

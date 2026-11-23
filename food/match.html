@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Food Match</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/common.css">
+<link rel="stylesheet" href="../assets/house.css">
+<link rel="stylesheet" href="../assets/food.css">
+</head>
+<body>
+<header class="top">
+  <a class="home" href="../" aria-label="Home"></a>
+  <h1>Food <span class="accent">Match</span></h1>
+</header>
+
+<main>
+  <div id="hud"></div>
+  <p class="task">Match the picture and the word. <span class="ua">З'єднай картинку зі словом: торкнись картинки, потім слова.</span></p>
+  <div id="board" style="margin-top:12px"></div>
+  <div class="explain" id="explain"></div>
+</main>
+
+<footer>
+  <button class="btn ghost" id="restart" data-icon="reset">Restart</button>
+</footer>
+
+<script src="../assets/common.js"></script>
+<script src="../assets/house.js"></script>
+<script src="../assets/food.js"></script>
+<script>
+  heartsGame({
+    hearts: 5,
+    makeRounds: () => {
+      const ws = shuffle(FOOD);              // 21 words -> 4 boards of 5 (the 21st goes to the first board)
+      return [ws.slice(0, 6), ws.slice(6, 11), ws.slice(11, 16), ws.slice(16, 21)];
+    },
+    render(set, g) {
+      matchBoard(document.getElementById("board"),
+        set.map(w => ({ left: foodPic(w), right: `${w.en}<small>${w.ua}</small>`, msg: `${w.en} — ${w.ua}`, say: w.en })),
+        g, { leftCls: "food-pic" });
+    },
+  });
+
+</script>
+</body>
+</html>
