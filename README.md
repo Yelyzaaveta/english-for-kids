@@ -43,7 +43,7 @@ house/                   — блок «Where is …?» (3 клас). У кож�
   missing-letter.html   — впиши пропущену букву в нових словах
   in-on-under.html      — 20 завдань: кіт/собака on / under / in (sofa, chair, bed, carpet, box), тест + з'єднай
   workbook.html         — воркбук: 10 аркушів А4 для друку в темно-фіолетовому стилі: слова, in/on/under, "Where are the balls?", "Who sits on the sofa?", з'єднай з перекладом, пропущені букви, обведи + намалюй, текст Yes/No, філворд (фото wb-*.jpg в assets/house/)
-  prepositions-workbook.html — 3 аркуші А4: in / on / under / next to / near / above / in front of (приклади з перекладом + 8 квадратів "намалюй": кіт, собака, велосипед, кепка, книга, ручка, м'яч з кольорами біля меблів)
+  prepositions-workbook.html — 3 аркуші А4: in / on / under / next to / near / above / in front of (приклади з перекладом + 8 квадратів "намалюй": кіт, собака, телефон у коробці, велосипед, кепка, книга, машинка, футбольний м'яч, з кольорами біля меблів)
   memory.html           — Memory: перевертай картки, шукай пари "фото — слово"
   build-word.html       — збери слово з букв за картинкою
   build-sentence.html   — збери речення зі слів за малюнком ("The cat is on the sofa.")
